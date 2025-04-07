@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+/* Dark scroll for horizontal swipe */
+.swipe-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .swipe-scroll::-webkit-scrollbar-track {
+    background: #1f2937; /* Tailwind's neutral-800 */
+    border-radius: 8px;
+  }
+  
+  .swipe-scroll::-webkit-scrollbar-thumb {
+    background: #4b5563; /* Tailwind's neutral-600 */
+    border-radius: 8px;
+  }
+  
+  .swipe-scroll::-webkit-scrollbar-thumb:hover {
+    background: #6b7280; /* Tailwind's neutral-500 */
+  }
+  
+
+
+
+  /* .swipe-scroll {
+    scrollbar-width: none; 
+    Firefox
+  }
+  
+  .swipe-scroll::-webkit-scrollbar {
+    display: none; 
+    Chrome/Safari
+  } */
