@@ -1,0 +1,18 @@
+[
+    {
+      "source": "stn_alharam",
+      "target": "stn_mina",
+      "value": 150
+    },
+    {
+      "source": "stn_mina",
+      "target": "stn_muzdalifah",
+      "value": 80
+    },
+    {
+      "source": "stn_muzdalifah",
+      "target": "stn_alharam",
+      "value": 50
+    }
+  ]
+  

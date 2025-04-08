@@ -1,0 +1,21 @@
+[
+    {
+      "id": "stn_alharam",
+      "name": "Al Haram",
+      "lat": 21.4225,
+      "lon": 39.8262
+    },
+    {
+      "id": "stn_mina",
+      "name": "Mina",
+      "lat": 21.4169,
+      "lon": 39.8947
+    },
+    {
+      "id": "stn_muzdalifah",
+      "name": "Muzdalifah",
+      "lat": 21.3871,
+      "lon": 39.8785
+    }
+  ]
+  

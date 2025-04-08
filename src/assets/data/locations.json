@@ -1,0 +1,15 @@
+[
+    {
+      "id": "station_1",
+      "name": "Al Haram",
+      "lat": 21.4225,
+      "lon": 39.8262
+    },
+    {
+      "id": "station_2",
+      "name": "Mina",
+      "lat": 21.4169,
+      "lon": 39.8947
+    }
+  ]
+  
