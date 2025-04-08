@@ -107,24 +107,26 @@ const AnimatedFlowMap: React.FC = () => {
   })[];
 
   const trailData = useMemo(() => {
-    const segments = 10;
-    const data: { position: [number, number]; color: number[]; opacity: number }[] = [];
+    const trailSegments = 5;
+    const data: { path: [number, number][]; color: number[]; opacity: number }[] = [];
 
     for (const flow of pathData) {
       const progress = flowProgress[`${flow.source}-${flow.target}`] ?? 0;
       const [x1, y1] = flow.path[0];
       const [x2, y2] = flow.path[2];
 
-      for (let i = 0; i < segments; i++) {
-        const t = Math.max(0, progress - i * 0.02); // tail lag
-        if (t < 0 || t > 1) continue;
+      for (let i = 0; i < trailSegments; i++) {
+        const t1 = Math.max(0, progress - i * 0.02);
+        const t2 = Math.max(0, progress - (i + 1) * 0.02);
+        if (t2 <= 0 || t1 > 1) continue;
 
-        const x = x1 + (x2 - x1) * t;
-        const y = y1 + (y2 - y1) * t;
+        const p1: [number, number] = [x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1];
+        const p2: [number, number] = [x1 + (x2 - x1) * t2, y1 + (y2 - y1) * t2];
+
         data.push({
-          position: [x, y],
+          path: [p2, p1], // reversed for trailing
           color: flow.color,
-          opacity: 255 * (1 - i / segments),
+          opacity: 255 * (1 - i / trailSegments),
         });
       }
     }
@@ -132,14 +134,16 @@ const AnimatedFlowMap: React.FC = () => {
     return data;
   }, [flowProgress, pathData]);
 
-  const trailLayer = new ScatterplotLayer({
+  const trailLayer = new PathLayer({
     id: "trail-layer",
     data: trailData,
-    getPosition: (d) => d.position,
-    getFillColor: (d) => [...d.color, d.opacity],
-    getRadius: 80,
-    radiusUnits: "meters",
+    getPath: (d) => d.path,
+    getColor: (d) => [...d.color, d.opacity],
+    getWidth: 6,
+    widthUnits: "pixels",
     pickable: false,
+    capRounded: true,
+    jointRounded: true,
   });
 
   const stationLayer = new ScatterplotLayer<Station>({
@@ -149,9 +153,8 @@ const AnimatedFlowMap: React.FC = () => {
     getFillColor: [0, 60, 120, 180],
     getRadius: (d) => {
       const t = performance.now() / 1000; // seconds
-      return 80 + 20 * Math.sin((t + d.id.charCodeAt(0)) * 2); // control speed via multiplier
+      return 25 + 10 * Math.sin((t + d.id.charCodeAt(0)) * 2); // control speed via multiplier
     },
-
     radiusUnits: "meters",
     stroked: true,
     getLineColor: [255, 255, 255],
@@ -163,9 +166,37 @@ const AnimatedFlowMap: React.FC = () => {
     },
   });
 
+  const flowHeadsLayer = new ScatterplotLayer({
+    id: "flow-heads",
+    data: pathData.map((flow) => {
+      const progress = flowProgress[`${flow.source}-${flow.target}`] ?? 0;
+      const [x1, y1] = flow.path[0];
+      const [x2, y2] = flow.path[2];
+      const x = x1 + (x2 - x1) * progress;
+      const y = y1 + (y2 - y1) * progress;
+      return {
+        position: [x, y],
+        color: flow.color,
+      };
+    }),
+    getPosition: (d) => d.position,
+    getFillColor: (d) => [...d.color, 255],
+    getRadius: 25,
+    radiusUnits: "meters",
+    pickable: false,
+  });
+
   return (
     <>
-      <DeckGL initialViewState={initialViewState} controller={true} layers={[trailLayer, stationLayer]}>
+      <DeckGL
+        initialViewState={initialViewState}
+        controller={true}
+        layers={[
+          trailLayer, // gradient motion trail (PathLayer)
+          flowHeadsLayer, // head dot
+          stationLayer,
+        ]}
+      >
         <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" style={{ width: "100%", height: "100%" }} />
 
         {hoverInfo?.object && (
