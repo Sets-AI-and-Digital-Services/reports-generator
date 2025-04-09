@@ -1,21 +1,5 @@
 [
-    {
-      "id": "stn_alharam",
-      "name": "Al Haram",
-      "lat": 21.4225,
-      "lon": 39.8262
-    },
-    {
-      "id": "stn_mina",
-      "name": "Mina",
-      "lat": 21.4169,
-      "lon": 39.8947
-    },
-    {
-      "id": "stn_muzdalifah",
-      "name": "Muzdalifah",
-      "lat": 21.3871,
-      "lon": 39.8785
-    }
-  ]
-  
+  { "id": "A", "name": "Kudai Station", "lat": 21.41642470453517, "lon": 39.82530717294031 },
+  { "id": "B", "name": "Bab Al-Malik Station", "lat": 21.39288463390101, "lon": 39.82599202189278 },
+  { "id": "C", "name": "Station C", "lat": 21.4, "lon": 39.88 }
+]

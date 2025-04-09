@@ -4,6 +4,9 @@ import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 
+import stations from "../../assets/data/stations.json"
+import flows from "../../assets/data/flows.json"
+
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 type Station = {
@@ -17,6 +20,25 @@ type Flow = {
   source: string;
   target: string;
   value: number;
+  path?: [number, number][];
+};
+
+const getInterpolatedPosition = (path: [number, number][], progress: number) => {
+  const totalSegments = path.length - 1;
+  const clampedProgress = Math.min(progress, 0.999);
+  const exact = clampedProgress * totalSegments;
+  const index = Math.floor(exact);
+  const t = exact - index;
+
+  if (index < 0 || index >= totalSegments || !path[index + 1]) return null;
+
+  const start = path[index];
+  const end = path[index + 1];
+
+  const x = start[0] + (end[0] - start[0]) * t;
+  const y = start[1] + (end[1] - start[1]) * t;
+
+  return [x, y];
 };
 
 const AnimatedFlowMap: React.FC = () => {
@@ -28,18 +50,6 @@ const AnimatedFlowMap: React.FC = () => {
     pitch: 30,
   };
 
-  const stations: Station[] = [
-    { id: "A", name: "Station A", lat: 21.42, lon: 39.83 },
-    { id: "B", name: "Station B", lat: 21.39, lon: 39.85 },
-    { id: "C", name: "Station C", lat: 21.4, lon: 39.88 },
-  ];
-
-  const flows: Flow[] = [
-    { source: "A", target: "B", value: 70 },
-    { source: "B", target: "C", value: 120 },
-    { source: "C", target: "A", value: 30 },
-  ];
-
   const [flowProgress, setFlowProgress] = useState<{ [key: string]: number }>({});
   const [hoverInfo, setHoverInfo] = useState<any>(null);
 
@@ -50,13 +60,12 @@ const AnimatedFlowMap: React.FC = () => {
         const updated: { [key: string]: number } = {};
         for (const flow of flows) {
           const key = `${flow.source}-${flow.target}`;
-          const current = prev[key] ?? Math.random(); // randomize initial offset
-          const next = current + 0.005; // adjust speed here
-          updated[key] = next > 1 ? 0 : next; // loop when complete
+          const current = prev[key] ?? Math.random();
+          const next = current + 0.001;
+          updated[key] = next > 1 ? 0 : next;
         }
         return updated;
       });
-
       frameId = requestAnimationFrame(animate);
     };
     animate();
@@ -72,7 +81,7 @@ const AnimatedFlowMap: React.FC = () => {
   const stringToColor = (str: string) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      hash = str.charCodeAt(i) + ((hash << 4) - hash);
     }
     const r = (hash & 0xff0000) >> 16;
     const g = (hash & 0x00ff00) >> 8;
@@ -80,31 +89,28 @@ const AnimatedFlowMap: React.FC = () => {
     return [128 + (r % 128), 128 + (g % 128), 128 + (b % 128)];
   };
 
-  const pathData = flows
-    .map((f) => {
-      const source = stationMap.get(f.source);
-      const target = stationMap.get(f.target);
-      if (!source || !target) return null;
+  const pathData = flows.map((f) => {
+    const source = stationMap.get(f.source);
+    const target = stationMap.get(f.target);
 
-      // Cubic Bezier (simple approximation for now)
-      const cx = (source.lon + target.lon) / 2 + 0.02;
-      const cy = (source.lat + target.lat) / 2 + 0.02;
-      const path = [
+    let path = f.path;
+    if (path) {
+      path = path.map(([lat, lon]) => [lon, lat]);
+    }
+
+    if (!path) {
+      path = [
         [source.lon, source.lat],
-        [cx, cy],
         [target.lon, target.lat],
       ];
+    }
 
-      return {
-        ...f,
-        path,
-        color: stringToColor(`${f.source}-${f.target}`),
-      };
-    })
-    .filter(Boolean) as (Flow & {
-    path: [number, number][];
-    color: number[];
-  })[];
+    return {
+      ...f,
+      path,
+      color: stringToColor(`${f.source}-${f.target}`),
+    };
+  }).filter(Boolean);
 
   const trailData = useMemo(() => {
     const trailSegments = 5;
@@ -112,25 +118,20 @@ const AnimatedFlowMap: React.FC = () => {
 
     for (const flow of pathData) {
       const progress = flowProgress[`${flow.source}-${flow.target}`] ?? 0;
-      const [x1, y1] = flow.path[0];
-      const [x2, y2] = flow.path[2];
 
       for (let i = 0; i < trailSegments; i++) {
-        const t1 = Math.max(0, progress - i * 0.02);
-        const t2 = Math.max(0, progress - (i + 1) * 0.02);
-        if (t2 <= 0 || t1 > 1) continue;
+        const p1 = getInterpolatedPosition(flow.path, progress - i * 0.02);
+        const p2 = getInterpolatedPosition(flow.path, progress - (i + 1) * 0.02);
 
-        const p1: [number, number] = [x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1];
-        const p2: [number, number] = [x1 + (x2 - x1) * t2, y1 + (y2 - y1) * t2];
+        if (!p1 || !p2) continue;
 
         data.push({
-          path: [p2, p1], // reversed for trailing
+          path: [p2, p1],
           color: flow.color,
           opacity: 255 * (1 - i / trailSegments),
         });
       }
     }
-
     return data;
   }, [flowProgress, pathData]);
 
@@ -152,8 +153,8 @@ const AnimatedFlowMap: React.FC = () => {
     getPosition: (d) => [d.lon, d.lat],
     getFillColor: [0, 60, 120, 180],
     getRadius: (d) => {
-      const t = performance.now() / 1000; // seconds
-      return 25 + 10 * Math.sin((t + d.id.charCodeAt(0)) * 2); // control speed via multiplier
+      const t = performance.now() / 1000;
+      return 25 + 10 * Math.sin((t + d.id.charCodeAt(0)) * 2);
     },
     radiusUnits: "meters",
     stroked: true,
@@ -162,7 +163,7 @@ const AnimatedFlowMap: React.FC = () => {
     pickable: true,
     onHover: setHoverInfo,
     updateTriggers: {
-      getRadius: performance.now(), // forces re-evaluation each frame
+      getRadius: performance.now(),
     },
   });
 
@@ -170,19 +171,28 @@ const AnimatedFlowMap: React.FC = () => {
     id: "flow-heads",
     data: pathData.map((flow) => {
       const progress = flowProgress[`${flow.source}-${flow.target}`] ?? 0;
-      const [x1, y1] = flow.path[0];
-      const [x2, y2] = flow.path[2];
-      const x = x1 + (x2 - x1) * progress;
-      const y = y1 + (y2 - y1) * progress;
+      const position = getInterpolatedPosition(flow.path, progress);
+      if (!position) return null;
+
       return {
-        position: [x, y],
+        position,
         color: flow.color,
       };
-    }),
+    }).filter(Boolean),
     getPosition: (d) => d.position,
     getFillColor: (d) => [...d.color, 255],
     getRadius: 25,
     radiusUnits: "meters",
+    pickable: false,
+  });
+
+  const debugPathsLayer = new PathLayer({
+    id: "debug-paths",
+    data: pathData,
+    getPath: (d) => d.path,
+    getColor: [255, 255, 0, 80],
+    getWidth: 3,
+    widthUnits: "pixels",
     pickable: false,
   });
 
@@ -191,13 +201,13 @@ const AnimatedFlowMap: React.FC = () => {
       <DeckGL
         initialViewState={initialViewState}
         controller={true}
-        layers={[
-          trailLayer, // gradient motion trail (PathLayer)
-          flowHeadsLayer, // head dot
-          stationLayer,
-        ]}
+        layers={[debugPathsLayer, trailLayer, flowHeadsLayer, stationLayer]}
       >
-        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" style={{ width: "100%", height: "100%" }} />
+        <StaticMap
+          mapboxAccessToken={MAPBOX_TOKEN}
+          mapStyle="mapbox://styles/mapbox/dark-v10"
+          style={{ width: "100%", height: "100%" }}
+        />
 
         {hoverInfo?.object && (
           <div
@@ -219,7 +229,8 @@ const AnimatedFlowMap: React.FC = () => {
               <>
                 <strong>Flow</strong>
                 <div>
-                  {stationMap.get(hoverInfo.object.source)?.name} →{stationMap.get(hoverInfo.object.target)?.name}
+                  {stationMap.get(hoverInfo.object.source)?.name} →
+                  {stationMap.get(hoverInfo.object.target)?.name}
                 </div>
                 <div>Trips: {hoverInfo.object.value}</div>
               </>
@@ -237,3 +248,4 @@ const AnimatedFlowMap: React.FC = () => {
 };
 
 export default AnimatedFlowMap;
+0
