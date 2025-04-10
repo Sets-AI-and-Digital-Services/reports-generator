@@ -35,6 +35,8 @@ export default function HexagonMapOfficial() {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [allOperators, setAllOperators] = useState<string[]>([]);
+  const [selectedOperator, setSelectedOperator] = useState<string>("");
 
   // Parse CSV file on mount
   useEffect(() => {
@@ -50,24 +52,27 @@ export default function HexagonMapOfficial() {
             const allDates = data.map((row) => row.Date).filter(Boolean);
             setDates(allDates);
             setSelectedDate(allDates[0]);
+            const headers = result.meta.fields?.filter((f) => f !== "Date") || [];
+            setAllOperators(headers);
           },
         });
       });
   }, []);
 
   // Prepare data for selected date
-  const mapData = selectedDate
-    ? Object.entries(csvData.find((row) => row.Date === selectedDate) || {})
-        .filter(([key]) => key !== "Date")
-        .map(([operator, value], index) => {
-          const coords = OPERATOR_COORDINATES[`Operator_${index}`];
-          return {
-            position: coords,
-            value: parseFloat(value || 0),
-            operator,
-          };
-        })
-    : [];
+  const rawRow = csvData.find((row) => row.Date === selectedDate) || {};
+
+  const mapData = Object.entries(rawRow)
+    .filter(([key]) => key !== "Date")
+    .filter(([operator]) => !selectedOperator || selectedOperator === operator)
+    .map(([operator, value], index) => {
+      const coords = OPERATOR_COORDINATES[`Operator_${index}`];
+      return {
+        position: coords,
+        value: parseFloat(value || 0),
+        operator,
+      };
+    });
 
   const columnLayer = new ColumnLayer({
     id: "3d-bars",
@@ -86,6 +91,18 @@ export default function HexagonMapOfficial() {
     <div className="w-full h-full relative">
       {/* Dropdown for Date Selection */}
       <div className="absolute top-2 left-2 z-10 bg-white p-2 rounded shadow-md">
+        <label className="block text-sm font-medium mb-1">Select Operator:</label>
+        <select className="border p-1 text-sm" value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)}>
+          <option value="">All Operators</option>
+          {allOperators.map((op) => (
+            <option key={op} value={op}>
+              {op}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="absolute top-28 left-2 z-10 bg-white p-2 rounded shadow-md">
         <label className="block text-sm font-medium mb-1">Select Date:</label>
         <select className="border p-1 text-sm" value={selectedDate || ""} onChange={(e) => setSelectedDate(e.target.value)}>
           {dates.map((date) => (
