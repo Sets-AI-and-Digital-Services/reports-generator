@@ -1,13 +1,15 @@
-
 import "./App.css";
+import HexagonMapOfficial from "./features/liveMap/components/HexagonMap";
 import { ScrollableCharts } from "./features/reports/components/ScrollableCharts";
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 
 function App() {
-
   return (
     <>
-      <ScrollableCharts />
+      {/* <ScrollableCharts /> */}
+      <div style={{ height: "100vh" }}>
+        <HexagonMapOfficial />
+      </div>
     </>
   );
 }

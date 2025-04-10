@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
-import  StaticMap  from "react-map-gl";
-import { HexagonLayer } from "@deck.gl/aggregation-layers";
+import StaticMap from "react-map-gl";
+import { ColumnLayer } from "@deck.gl/layers";
 import { AmbientLight, PointLight, LightingEffect } from "@deck.gl/core";
-import { useInView } from "../../../shared/hooks/useInView";
+import Papa from "papaparse";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -11,97 +11,106 @@ const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.0 }
 const pointLight = new PointLight({
   color: [255, 255, 255],
   intensity: 0.8,
-  position: [39.8262, 21.4225, 8000], // Makkah centered
+  position: [39.6122, 24.4709, 8000],
 });
 const lightingEffect = new LightingEffect({ ambientLight, pointLight });
 
 const INITIAL_VIEW_STATE = {
-  longitude: 39.86,
-  latitude: 21.41,
-  zoom: 10,
-  pitch: 40.5,
-  bearing: -27,
+  latitude: 24.4709,
+  longitude: 39.6122,
+  zoom: 11,
+  bearing: 0,
+  pitch: 30,
 };
 
-const colorRange = [
-  [1, 152, 189],
-  [73, 227, 206],
-  [216, 254, 181],
-  [254, 237, 177],
-  [254, 173, 84],
-  [209, 55, 78],
-];
-
-const MAKKAH_POINTS: number[][] = [
-  [39.8262, 21.4225], // Al Haram
-  [39.8261, 21.4224],
-  [39.8942, 21.4123], // Mina
-  [39.8941, 21.4122],
-  [39.9441, 21.3844], // Muzdalifah
-  [39.9440, 21.3843],
-  [39.9836, 21.3556], // Arafat
-  [39.9835, 21.3555],
-  [39.8300, 21.4300], // Near Haram
-  [39.8500, 21.4100], // Road point
-];
+// Dummy coordinates around the view
+const OPERATOR_COORDINATES: Record<string, [number, number]> = {};
+let lng = 39.6122;
+let lat = 24.4709;
+for (let i = 0; i < 70; i++) {
+  OPERATOR_COORDINATES[`Operator_${i}`] = [lng + Math.random() * 0.015, lat + Math.random() * 0.015];
+}
 
 export default function HexagonMapOfficial() {
-  const { ref: containerRef, inView } = useInView(0.6);
-  const animationRef = useRef<number | null>(null);
-  const [elevationScale, setElevationScale] = useState(0);
+  const [csvData, setCsvData] = useState<any[]>([]);
+  const [dates, setDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
+  // Parse CSV file on mount
   useEffect(() => {
-    if (!inView) return;
-    setElevationScale(0);
-    let scale = 0;
-    const animate = () => {
-      scale += 1;
-      setElevationScale(scale);
-      if (scale < 50) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-    animationRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationRef.current!);
-  }, [inView]);
+    fetch("/data/daily_operators_avg_central_area_dwelling_time.csv")
+      .then((res) => res.text())
+      .then((csvText) => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (result) => {
+            const data = result.data as any[];
+            setCsvData(data);
+            const allDates = data.map((row) => row.Date).filter(Boolean);
+            setDates(allDates);
+            setSelectedDate(allDates[0]);
+          },
+        });
+      });
+  }, []);
 
-  const hexLayer = new HexagonLayer({
-    id: "heatmap",
-    data: MAKKAH_POINTS,
-    getPosition: (d: any) => d,
-    radius: 600,
-    elevationScale,
-    extruded: true,
+  // Prepare data for selected date
+  const mapData = selectedDate
+    ? Object.entries(csvData.find((row) => row.Date === selectedDate) || {})
+        .filter(([key]) => key !== "Date")
+        .map(([operator, value], index) => {
+          const coords = OPERATOR_COORDINATES[`Operator_${index}`];
+          return {
+            position: coords,
+            value: parseFloat(value || 0),
+            operator,
+          };
+        })
+    : [];
+
+  const columnLayer = new ColumnLayer({
+    id: "3d-bars",
+    data: mapData,
+    diskResolution: 12,
+    radius: 80,
+    elevationScale: 100,
+    getPosition: (d) => d.position,
+    getFillColor: (d) => [255 - d.value * 5, d.value * 10, 140],
+    getElevation: (d) => d.value,
     pickable: true,
-    colorRange,
-    elevationRange: [0, 3000],
-    material: {
-      ambient: 0.64,
-      diffuse: 0.6,
-      shininess: 32,
-      specularColor: [51, 51, 51],
-    },
+    extruded: true,
   });
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <div className="w-full h-full relative">
+      {/* Dropdown for Date Selection */}
+      <div className="absolute top-2 left-2 z-10 bg-white p-2 rounded shadow-md">
+        <label className="block text-sm font-medium mb-1">Select Date:</label>
+        <select className="border p-1 text-sm" value={selectedDate || ""} onChange={(e) => setSelectedDate(e.target.value)}>
+          {dates.map((date) => (
+            <option key={date} value={date}>
+              {date}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller
-        layers={[hexLayer]}
+        layers={[columnLayer]}
         effects={[lightingEffect]}
         getTooltip={({ object }) =>
           object && {
-            html: `Lat: ${object.position[1].toFixed(4)}, Lng: ${object.position[0].toFixed(
-              4
-            )}<br/>Count: ${object.count}`,
+            html: `
+              <b>Operator:</b> ${object.operator}<br/>
+              <b>Value:</b> ${object.value}
+            `,
           }
         }
       >
-        <StaticMap
-          mapboxAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v10"
-        />
+        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" />
       </DeckGL>
     </div>
   );

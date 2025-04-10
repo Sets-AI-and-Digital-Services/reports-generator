@@ -22,6 +22,7 @@
     "lucide-react": "^0.484.0",
     "mapbox-gl": "^2.15.0",
     "maplibre-gl": "^4.7.1",
+    "papaparse": "^5.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-map-gl": "^7.1.9",
