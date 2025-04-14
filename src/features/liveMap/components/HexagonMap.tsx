@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
-import StaticMap from "react-map-gl";
+import  StaticMap  from "react-map-gl";
 import { ColumnLayer } from "@deck.gl/layers";
 import { AmbientLight, PointLight, LightingEffect } from "@deck.gl/core";
-import Papa from "papaparse";
+import { parse } from "@loaders.gl/core";
+import { CSVLoader } from "@loaders.gl/csv";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+const CSV_PATH = "/data/dwelling_time/north_axis_start_station.csv";
 
+// ✅ Mimic official deck.gl lighting
 const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.0 });
 const pointLight = new PointLight({
   color: [255, 255, 255],
@@ -15,120 +18,106 @@ const pointLight = new PointLight({
 });
 const lightingEffect = new LightingEffect({ ambientLight, pointLight });
 
-const INITIAL_VIEW_STATE = {
-  latitude: 24.4709,
-  longitude: 39.6122,
-  zoom: 11,
-  bearing: 0,
-  pitch: 30,
-};
+// ✅ Official-style color gradient
+const colorRamp = [
+  [1, 152, 189],   // Cyan
+  [73, 227, 206],  // Light Teal
+  [216, 254, 181], // Yellow-green
+  [254, 237, 177], // Soft Yellow
+  [254, 173, 84],  // Orange
+  [209, 55, 78],   // Red
+];
 
-// Dummy coordinates around the view
-const OPERATOR_COORDINATES: Record<string, [number, number]> = {};
-let lng = 39.6122;
-let lat = 24.4709;
-for (let i = 0; i < 70; i++) {
-  OPERATOR_COORDINATES[`Operator_${i}`] = [lng + Math.random() * 0.015, lat + Math.random() * 0.015];
+function getColorForElevation(elevation: number): number[] {
+  if (elevation < 5000) return colorRamp[0];
+  if (elevation < 10000) return colorRamp[1];
+  if (elevation < 30000) return colorRamp[2];
+  if (elevation < 60000) return colorRamp[3];
+  if (elevation < 100000) return colorRamp[4];
+  return colorRamp[5];
 }
 
-export default function HexagonMapOfficial() {
-  const [csvData, setCsvData] = useState<any[]>([]);
-  const [dates, setDates] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [allOperators, setAllOperators] = useState<string[]>([]);
-  const [selectedOperator, setSelectedOperator] = useState<string>("");
+const INITIAL_VIEW_STATE = {
+  longitude: 39.6122,
+  latitude: 24.4709,
+  zoom: 6.6,
+  pitch: 40.5,
+  bearing: -27,
+};
 
-  // Parse CSV file on mount
+function getRandomOffset() {
+  return (Math.random() - 0.5) * 0.05;
+}
+
+export default function OperatorColumnMapStyled() {
+  const [data, setData] = useState<any[]>([]);
+
   useEffect(() => {
-    fetch("/data/daily_operators_avg_central_area_dwelling_time.csv")
-      .then((res) => res.text())
-      .then((csvText) => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (result) => {
-            const data = result.data as any[];
-            setCsvData(data);
-            const allDates = data.map((row) => row.Date).filter(Boolean);
-            setDates(allDates);
-            setSelectedDate(allDates[0]);
-            const headers = result.meta.fields?.filter((f) => f !== "Date") || [];
-            setAllOperators(headers);
-          },
-        });
-      });
+    const fetchData = async () => {
+      const response = await fetch(CSV_PATH);
+      const text = await response.text();
+      const parsed: any = await parse(text, CSVLoader);
+
+      const centerLat = 24.4709;
+      const centerLng = 39.6122;
+
+      const operatorPoints = parsed.data
+        .map((row: any) => {
+          const total = parseFloat(row.Total_Time_Spent);
+          if (!isNaN(total)) {
+            return {
+              position: [centerLng + getRandomOffset(), centerLat + getRandomOffset()],
+              elevation: total,
+              operator: row.Operator,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      setData(operatorPoints);
+    };
+
+    fetchData();
   }, []);
 
-  // Prepare data for selected date
-  const rawRow = csvData.find((row) => row.Date === selectedDate) || {};
-
-  const mapData = Object.entries(rawRow)
-    .filter(([key]) => key !== "Date")
-    .filter(([operator]) => !selectedOperator || selectedOperator === operator)
-    .map(([operator, value], index) => {
-      const coords = OPERATOR_COORDINATES[`Operator_${index}`];
-      return {
-        position: coords,
-        value: parseFloat(value || 0),
-        operator,
-      };
-    });
-
   const columnLayer = new ColumnLayer({
-    id: "3d-bars",
-    data: mapData,
+    id: "styled-column-layer",
+    data,
     diskResolution: 12,
-    radius: 80,
-    elevationScale: 100,
-    getPosition: (d) => d.position,
-    getFillColor: (d) => [255 - d.value * 5, d.value * 10, 140],
-    getElevation: (d) => d.value,
-    pickable: true,
+    radius: 250,
     extruded: true,
+    pickable: true,
+    getPosition: (d) => d.position,
+    getElevation: (d) => d.elevation,
+    getFillColor: (d) => getColorForElevation(d.elevation),
+    material: {
+      ambient: 0.64,
+      diffuse: 0.6,
+      shininess: 32,
+      specularColor: [51, 51, 51],
+    },
+    transitions: {
+      elevationScale: 3000,
+    },
   });
 
   return (
-    <div className="w-full h-full relative">
-      {/* Dropdown for Date Selection */}
-      <div className="absolute top-2 left-2 z-10 bg-white p-2 rounded shadow-md">
-        <label className="block text-sm font-medium mb-1">Select Operator:</label>
-        <select className="border p-1 text-sm" value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)}>
-          <option value="">All Operators</option>
-          {allOperators.map((op) => (
-            <option key={op} value={op}>
-              {op}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="absolute top-28 left-2 z-10 bg-white p-2 rounded shadow-md">
-        <label className="block text-sm font-medium mb-1">Select Date:</label>
-        <select className="border p-1 text-sm" value={selectedDate || ""} onChange={(e) => setSelectedDate(e.target.value)}>
-          {dates.map((date) => (
-            <option key={date} value={date}>
-              {date}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
-        controller
-        layers={[columnLayer]}
-        effects={[lightingEffect]}
-        getTooltip={({ object }) =>
-          object && {
-            html: `
-              <b>Operator:</b> ${object.operator}<br/>
-              <b>Value:</b> ${object.value}
-            `,
-          }
+    <DeckGL
+      initialViewState={INITIAL_VIEW_STATE}
+      controller
+      layers={[columnLayer]}
+      effects={[lightingEffect]}
+      getTooltip={({ object }) =>
+        object && {
+          html: `<b>${object.operator}</b><br/>Time: ${object.elevation.toFixed(2)}`,
         }
-      >
-        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" />
-      </DeckGL>
-    </div>
+      }
+    >
+      <StaticMap
+        mapboxAccessToken={MAPBOX_TOKEN}
+        mapStyle="mapbox://styles/mapbox/dark-v10"
+      />
+    </DeckGL>
   );
 }
