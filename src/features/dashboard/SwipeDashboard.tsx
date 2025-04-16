@@ -1,3 +1,6 @@
+import AnimatedFlowMap from "../AnimatedFlowMap/AnimatedFlowMap";
+import BarMap from "../BarMap/BarMap";
+import TrajectoryMap from "../TrajectoryMap/TrajectoryMap";
 import SwipeCard from "./SwipeCard";
 import SwipeContainer from "./SwipeContainer";
 import { BarChart } from "./componnets/charts/BarChart";
@@ -8,6 +11,15 @@ const SwipeDashboard = () => {
   return (
     <div className="w-full overflow-x-hidden text-white bg-black border rounded-xl">
       <SwipeContainer>
+        <SwipeCard title="trajectory-map">
+          <AnimatedFlowMap />
+        </SwipeCard>
+        <SwipeCard title="bar-map">
+          <BarMap />
+        </SwipeCard>
+        <SwipeCard title="trajectory-map">
+          <TrajectoryMap />
+        </SwipeCard>
         <SwipeCard title="od-map">
           <video
             autoPlay
