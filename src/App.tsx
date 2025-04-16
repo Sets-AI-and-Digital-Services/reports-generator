@@ -1,6 +1,5 @@
 import "./App.css";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { ScrollableCharts } from "./features/digitalReports/ScrollableCharts";
 import HeroSection from "./features/digitalReports/HeroSection";
 import WhatWePromised from "./features/digitalReports/WhatWePromised";
 import WhatWeActedOn from "./features/digitalReports/WhatWeActedOn";

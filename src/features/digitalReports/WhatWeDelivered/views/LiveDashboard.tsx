@@ -1,6 +1,10 @@
 
 const LiveDashboard = () => {
-  return <div>LiveDashboard</div>;
+  return <div className="h-full"> <img
+  src="/assets/dash.png"
+  alt="map"
+  className="w-full my-auto"
+/></div>;
 };
 
 export default LiveDashboard;

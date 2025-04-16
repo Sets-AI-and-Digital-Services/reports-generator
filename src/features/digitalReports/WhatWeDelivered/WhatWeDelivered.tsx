@@ -38,7 +38,7 @@ const WhatWeDelivered: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 min-h-[300px] relative">
+          <div className="flex-1 min-h-[300px] relative my-auto overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeKey}
@@ -46,7 +46,7 @@ const WhatWeDelivered: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.4 }}
-                className="w-full"
+                className="w-full h-full overflow-hidden"
               >
                 {views[activeKey]}
               </motion.div>
