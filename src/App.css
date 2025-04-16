@@ -4,25 +4,41 @@
 
 
 
-/* Dark scroll for horizontal swipe */
-.swipe-scroll::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .swipe-scroll::-webkit-scrollbar-track {
-    background: #1f2937; /* Tailwind's neutral-800 */
-    border-radius: 8px;
-  }
-  
-  .swipe-scroll::-webkit-scrollbar-thumb {
-    background: #4b5563; /* Tailwind's neutral-600 */
-    border-radius: 8px;
-  }
-  
-  .swipe-scroll::-webkit-scrollbar-thumb:hover {
-    background: #6b7280; /* Tailwind's neutral-500 */
-  }
-  
+html,
+body {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+/* Scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f6f6fb;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #00958A;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #abadb1;
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+  background-color: #abadb1;
+}
 
 
 
