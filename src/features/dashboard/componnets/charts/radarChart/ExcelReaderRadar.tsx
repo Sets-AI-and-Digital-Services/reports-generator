@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import BusRadarChart from "./BusRadarChart";
+import light_bulb from "../../../../../../public/assets/light_bulb.svg";
 
 interface DataRow {
   Station: string;
@@ -8,9 +9,54 @@ interface DataRow {
   Value: number;
 }
 
+const INSIGHTS_DATA: {
+  [stationName: string]: {
+    Description?: string;
+    "Bus Count"?: number;
+    "Waiting Time"?: number;
+    "Entry Flow Rate"?: number;
+    "Exit Flow Rate"?: number;
+  };
+} = {
+  "Central Area": {
+    Description:
+      "This indicates an increase in both waiting time and bus volume between 12:00 and 2:00 PM, likely due to overlap with hotel check-in and check-out times.",
+    "Bus Count": 49684,
+    "Waiting Time": 19,
+    "Entry Flow Rate": 69,
+    "Exit Flow Rate": 72,
+  },
+  "Quba Parking": {
+    Description:
+      "This reflects pilgrims’ desire to follow the Sunnah of Prophet Muhammad (peace be upon him) by visiting and praying at Quba Mosque, in accordance with his practice of praying there on Saturdays.",
+    "Bus Count": 19383,
+    "Waiting Time": 15,
+    "Entry Flow Rate": 20,
+    "Exit Flow Rate": 27,
+  },
+  "SW Axis Start Station 3": {
+    "Bus Count": 12171,
+    "Waiting Time": 18,
+    "Entry Flow Rate": 18,
+    "Exit Flow Rate": 17,
+  },
+  "SW Axis Start Station 1": {
+    "Bus Count": 5233,
+    "Waiting Time": 27,
+    "Entry Flow Rate": 9,
+    "Exit Flow Rate": 8,
+  },
+  "North Axis Start Station": {
+    "Bus Count": 26249,
+    "Waiting Time": 17,
+    "Entry Flow Rate": 39,
+    "Exit Flow Rate": 39,
+  },
+};
+
 const ExcelReaderRadar: React.FC = () => {
-  const [selectedStation, setSelectedStation] =
-    useState<string>("Central Area");
+  const [selectedStation, setSelectedStation] = useState<string>("Central Area");
+  const insights = INSIGHTS_DATA[selectedStation] || null;
   const [stationList, setStationList] = useState<string[]>([]);
 
   const [busData, setBusData] = useState<DataRow[]>([]);
@@ -56,9 +102,7 @@ const ExcelReaderRadar: React.FC = () => {
       const exit = extractSheetData("Exit Flow Rate");
 
       // Only include stations from the predefined list and that exist in the data
-      const filteredStations = predefinedStations.filter((station) =>
-        bus.some((row) => row.Station === station)
-      );
+      const filteredStations = predefinedStations.filter((station) => bus.some((row) => row.Station === station));
 
       setBusData(bus);
       setWaitTimeData(wait);
@@ -74,16 +118,39 @@ const ExcelReaderRadar: React.FC = () => {
     fetchAndParseExcel();
   }, []);
 
-  const filterData = (rows: DataRow[]) =>
-    rows.filter((row) => row.Station === selectedStation);
+  const filterData = (rows: DataRow[]) => rows.filter((row) => row.Station === selectedStation);
 
   return (
     <div className="flex flex-col justify-start w-full h-full p-4 overflow-hidden">
+      {insights && (
+        <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-4 right-8 w-80 h-40 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+          <h2 className="text-lg font-semibold">Insights</h2>
+          {insights?.["Description"] && <div className="flex items-start gap-2">
+            <img src={light_bulb} className="" />
+            <span>{insights["Description"]}</span>
+          </div>}
+          <div className="flex items-start gap-2">
+            <img src={light_bulb} className="" />
+            <span>Bus Count: {insights["Bus Count"]}</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <img src={light_bulb} className="" />
+            <span>Waiting Time: {insights["Waiting Time"]}</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <img src={light_bulb} className="" />
+            <span>Entry Flow Rate: {insights["Entry Flow Rate"]}</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <img src={light_bulb} className="" />
+            <span>Exit Flow Rate: {insights["Exit Flow Rate"]}</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-end justify-center gap-5 align-middle">
         {" "}
-        <h2 className="my-8 text-2xl font-semibold text-center text-white">
-          {selectedStation}
-        </h2>
+        <h2 className="my-8 text-2xl font-semibold text-center text-white">{selectedStation}</h2>
         {/* Dropdown to switch stations */}
         <div className="flex justify-center mb-6">
           <select
@@ -100,33 +167,19 @@ const ExcelReaderRadar: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-3 gap-6 px-10 py-4 m-3 mx-auto">
+      <div className="grid w-full grid-cols-3 gap-6 px-10 pt-4 m-3 mt-20 mb-0 mx-auto">
         <div>
-          <h2 className="mb-2 text-lg font-semibold text-center text-white">
-            Bus Count
-          </h2>
-          <BusRadarChart
-            stationName={selectedStation}
-            data={{ "Bus Count": filterData(busData) }}
-            colorMap={{ "Bus Count": "green" }}
-          />
+          <h2 className="mb-2 text-lg font-semibold text-center text-white">Bus Count</h2>
+          <BusRadarChart stationName={selectedStation} data={{ "Bus Count": filterData(busData) }} colorMap={{ "Bus Count": "green" }} />
         </div>
 
         <div>
-          <h2 className="mb-2 text-lg font-semibold text-center text-white">
-            Waiting Time
-          </h2>
-          <BusRadarChart
-            stationName={selectedStation}
-            data={{ "wait time": filterData(waitTimeData) }}
-            colorMap={{ "wait time": "darkorange" }}
-          />
+          <h2 className="mb-2 text-lg font-semibold text-center text-white">Waiting Time</h2>
+          <BusRadarChart stationName={selectedStation} data={{ "wait time": filterData(waitTimeData) }} colorMap={{ "wait time": "darkorange" }} />
         </div>
 
         <div>
-          <h2 className="mb-2 text-lg font-semibold text-center text-white">
-            Entry & Exit Flow
-          </h2>
+          <h2 className="mb-2 text-lg font-semibold text-center text-white">Entry & Exit Flow</h2>
           <BusRadarChart
             stationName={selectedStation}
             data={{

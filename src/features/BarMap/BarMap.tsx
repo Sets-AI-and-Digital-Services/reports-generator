@@ -5,6 +5,7 @@ import { AmbientLight, PointLight, LightingEffect } from "@deck.gl/core";
 import { parse } from "@loaders.gl/core";
 import { CSVLoader } from "@loaders.gl/csv";
 import { ColumnLayer } from "@deck.gl/layers";
+import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -44,14 +45,14 @@ const FILE_THRESHOLDS = {
   north_axis_start_station: { low: 24.36, high: 45.24 },
   north_axis_end_station: { low: 0.84, high: 1.56 },
   nw_axis_internal_station: { low: 200.45, high: 372.27 },
-  nw_axis_end_station: { low: 0.50, high: 0.92 },
+  nw_axis_end_station: { low: 0.5, high: 0.92 },
   train_station: { low: 18.09, high: 33.59 },
   airport: { low: 38.32, high: 71.17 },
   central_area: { low: 13.61, high: 25.28 },
   sw_axis_start_station_1: { low: 521.34, high: 968.21 },
-  sw_axis_start_station_2: { low: 27.20, high: 50.51 },
+  sw_axis_start_station_2: { low: 27.2, high: 50.51 },
   sw_axis_start_station_3: { low: 46.15, high: 85.72 },
-  sw_axis_end_station: { low: 0.40, high: 0.75 },
+  sw_axis_end_station: { low: 0.4, high: 0.75 },
   quba_parking: { low: 40.18, high: 68 },
   default: { low: 12, high: 22 },
 };
@@ -148,9 +149,9 @@ export default function BarMap() {
       const { low, high } = FILE_THRESHOLDS[fileKey] || FILE_THRESHOLDS["default"];
       const v = d.value;
 
-      if (v < low) return [34, 197, 94];       // green
-      if (v < high) return [255, 179, 8];       // yellow
-      return [239, 68, 68];                    // red
+      if (v < low) return [34, 197, 94]; // green
+      if (v < high) return [255, 179, 8]; // yellow
+      return [239, 68, 68]; // red
     },
     material: {
       ambient: 0.64,
@@ -162,11 +163,26 @@ export default function BarMap() {
 
   return (
     <>
-      <div className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-md rounded-lg shadow-lg p-4 w-72 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold mb-2">📊 Insights</h2>
-        <p className="mb-1">Total CSV Files: {CSV_FILES.length}</p>
-        <p className="mb-1">Data Points Rendered: {points.length}</p>
+      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <h2 className="text-lg font-semibold">Insights</h2>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>
+            The dwell time analysis reveals operational pressure points across the city, with top destinations accounting for over 75,000 hours of bus
+            stoppage, and the Central Area alone contributing 20,000 hours. This highlights the need for better crowd flow management and real-time
+            scheduling at key locations.
+          </span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>Dwell Time at top destinations 75K hours</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>Dwell Time at Central Area 20K hours</span>
+        </div>
       </div>
+
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller
@@ -177,8 +193,7 @@ export default function BarMap() {
 
           const name = object.operator || "Unknown";
           const source = object.source || "Unknown Source";
-          const value =
-            typeof object.value === "number" ? object.value.toFixed(2) : "N/A";
+          const value = typeof object.value === "number" ? object.value.toFixed(2) : "N/A";
 
           return {
             html: `
@@ -191,10 +206,7 @@ export default function BarMap() {
           };
         }}
       >
-        <StaticMap
-          mapboxAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v10"
-        />
+        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" />
       </DeckGL>
     </>
   );

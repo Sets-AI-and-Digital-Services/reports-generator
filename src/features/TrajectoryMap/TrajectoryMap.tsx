@@ -3,8 +3,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
-import Papa from "papaparse";
 // import stations from "../../assets/data/stations.json";
+import left_arrow from "../../../public/assets/left_arrow.svg";
+import right_arrow from "../../../public/assets/right_arrow.svg";
+import loader_img from "../../../public/assets/loader.svg";
+import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 // Set the API base URL so that it is a complete URL
@@ -54,7 +57,7 @@ const TrajectoryMap: React.FC = () => {
     pitch: 30,
   };
 
-  const fileCacheRef = useRef<{ [fileName: string]: FlowPath[] }>({});
+  const [loadingFile, setLoadingFile] = useState<boolean>(false);
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [busFlows, setBusFlows] = useState<FlowPath[]>([]);
   const [isAllDataMode, setIsAllDataMode] = useState(false);
@@ -76,9 +79,10 @@ const TrajectoryMap: React.FC = () => {
 
   // Fetch aggregated data from backend using a complete API URL.
   useEffect(() => {
+    setLoadingFile(true);
     // Build a full file path for the CSV file.
     const filePath = `${API_BASE_URL}/data/output/${selectedFile}`;
-    fetch(`${API_BASE_URL}/aggregated-transitions?file_path=data/${selectedFile}&resolution=0.05`)
+    fetch(`${API_BASE_URL}/aggregated-transitions?file_path=${selectedFile}&resolution=0.01`)
       .then((res) => res.json())
       .then((data) => {
         // Map each aggregated record to a two-point line.
@@ -92,13 +96,14 @@ const TrajectoryMap: React.FC = () => {
           color: getOperatorColor(item.operator),
         }));
         setBusFlows(aggregatedFlows);
-        const uniqueOperators = [
-          ...new Set(aggregatedFlows.map((r: any) => r.operator))
-        ].filter((op) => op && op !== "Unknown");
+        const uniqueOperators = [...new Set(aggregatedFlows.map((r: any) => r.operator))].filter((op) => op && op !== "Unknown");
         setOperators(uniqueOperators);
       })
       .catch((error) => {
         console.error("Error fetching aggregated data:", error);
+      })
+      .finally(() => {
+        setLoadingFile(false);
       });
   }, [selectedFile]);
 
@@ -153,24 +158,48 @@ const TrajectoryMap: React.FC = () => {
 
   return (
     <>
-      {/* Insights div on top of map */}
-      <div className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-md rounded-lg shadow-lg p-4 w-72 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold mb-2">📊 Insights</h2>
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text
-          ever since the 1500s.
-        </p>
+      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <h2 className="text-lg font-semibold">Insights</h2>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>The visualization reveals the top source cities sending buses to Madinah, with Jeddah, Makkah, and Riyadh leading in volume.</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>Top Sources:
+            <li>Jeddah</li>
+            <li>Makkah</li>
+            <li>Riyadh</li>
+            <li>Khaybar</li>
+            <li>Khulays</li>
+            <li>Al Majma'ah Al Hanakiyah</li>
+            <li>Buraydah Najran</li>
+          </span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>
+            <b>Abu Sarhad</b> demonstrates the most structured and consistent bus movement across the city. This reflects strong route planning,
+            minimal deviation, and high operational discipline—making it a potential model for other operators.
+          </span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>
+            <b>Abu Sarhad</b> Seems to be the most organized Footprint
+          </span>
+        </div>
       </div>
 
       {/* Controls div on top of map */}
-      <div style={{ position: "absolute", zIndex: 10, top: 4, left: 4, textAlign: "left", color: "white" }}>
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-80">
         <div style={{ marginBottom: "1rem" }}>
-          <label>Select File:</label>
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            style={{ backgroundColor: "#fff", color: "#000" }}
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
+            <option value="">Select Date</option>
             {fileList.map((file) => (
               <option key={file} value={file}>
                 {file}
@@ -179,30 +208,18 @@ const TrajectoryMap: React.FC = () => {
           </select>
         </div>
         <div>
-          <label>Operator:</label>
           <select
             value={selectedOperator || ""}
             onChange={(e) => setSelectedOperator(e.target.value || null)}
-            style={{ backgroundColor: "#fff", color: "#000" }}
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
-            <option value="">All Operators</option>
+            <option value="">Operator Name</option>
             {operators.map((op) => (
               <option key={op} value={op}>
                 {op}
               </option>
             ))}
           </select>
-        </div>
-        <div style={{ marginTop: 8 }}>
-          <label>Simulated Minutes per Real Minute:</label>
-          <input
-            type="number"
-            min={1}
-            max={1440}
-            value={simSpeed}
-            onChange={(e) => setSimSpeed(Number(e.target.value))}
-            style={{ backgroundColor: "#fff", color: "#000", paddingInline: "0.5rem" }}
-          />
         </div>
         <div className="flex gap-4" style={{ marginTop: "10px" }}>
           {/* Additional operator-data loading buttons can be added here if needed */}
@@ -213,7 +230,13 @@ const TrajectoryMap: React.FC = () => {
       </div>
 
       {/* Navigation div on bottom center */}
+      {loadingFile && (
+        <div className="absolute left-0 right-0 bottom-24 z-10 m-auto w-fit flex rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+          <img src={loader_img} /> The map will be updated shortly
+        </div>
+      )}
       <div
+        className="flex gap-2"
         style={{
           position: "absolute",
           zIndex: 10,
@@ -226,11 +249,20 @@ const TrajectoryMap: React.FC = () => {
           bottom: "1rem",
         }}
       >
-        <button onClick={goToPreviousFile} disabled={currentFileIndex <= 0}>
-          ⬅ Previous
+        <button
+          onClick={goToPreviousFile}
+          disabled={currentFileIndex <= 0}
+          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
+        >
+          <img src={left_arrow} /> Previous
         </button>
-        <button onClick={goToNextFile} disabled={currentFileIndex >= fileList.length - 1} style={{ marginLeft: "10px" }}>
-          Next ➡
+        <button
+          onClick={goToNextFile}
+          disabled={currentFileIndex >= fileList.length - 1}
+          style={{ marginLeft: "10px" }}
+          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
+        >
+          Next <img src={right_arrow} />
         </button>
       </div>
 

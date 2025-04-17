@@ -3,6 +3,7 @@ import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Papa from "papaparse";
+import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -43,15 +44,8 @@ const getInterpolatedPosition = (path: [number, number][], progress: number) => 
   return [x, y];
 };
 
-const interpolateBetween = (
-  a: [number, number],
-  b: [number, number],
-  steps: number
-): [number, number][] =>
-  Array.from({ length: steps }, (_, i) => [
-    a[0] + ((b[0] - a[0]) * (i + 1)) / (steps + 1),
-    a[1] + ((b[1] - a[1]) * (i + 1)) / (steps + 1),
-  ]);
+const interpolateBetween = (a: [number, number], b: [number, number], steps: number): [number, number][] =>
+  Array.from({ length: steps }, (_, i) => [a[0] + ((b[0] - a[0]) * (i + 1)) / (steps + 1), a[1] + ((b[1] - a[1]) * (i + 1)) / (steps + 1)]);
 
 const AnimatedFlowMap: React.FC = () => {
   const initialViewState = {
@@ -113,9 +107,7 @@ const AnimatedFlowMap: React.FC = () => {
     if (fileCacheRef.current[selectedFile]) {
       const cachedData = fileCacheRef.current[selectedFile];
       setBusFlows(cachedData);
-      const uniqueOperators = [
-        ...new Set(cachedData.map((flow) => flow.operator)),
-      ].filter((op) => op && op !== "Unknown");
+      const uniqueOperators = [...new Set(cachedData.map((flow) => flow.operator))].filter((op) => op && op !== "Unknown");
       setOperators(uniqueOperators);
       return;
     }
@@ -150,13 +142,7 @@ const AnimatedFlowMap: React.FC = () => {
             const result: FlowPath[] = Object.entries(groupedByBus)
               .map(([busId, records]) => {
                 const sorted = records
-                  .filter(
-                    (r) =>
-                      r.Latitude &&
-                      r.Longitude &&
-                      !isNaN(+r.Latitude) &&
-                      !isNaN(+r.Longitude)
-                  )
+                  .filter((r) => r.Latitude && r.Longitude && !isNaN(+r.Latitude) && !isNaN(+r.Longitude))
                   .sort((a, b) => +a.Timestamp - +b.Timestamp);
 
                 const operator = sorted[0].Operator;
@@ -165,22 +151,14 @@ const AnimatedFlowMap: React.FC = () => {
                 let timestamps: number[] = [];
                 let times: string[] = [];
                 for (let i = 0; i < sorted.length - 1; i++) {
-                  const a: [number, number] = [
-                    parseFloat(sorted[i].Longitude),
-                    parseFloat(sorted[i].Latitude),
-                  ];
-                  const b: [number, number] = [
-                    parseFloat(sorted[i + 1].Longitude),
-                    parseFloat(sorted[i + 1].Latitude),
-                  ];
+                  const a: [number, number] = [parseFloat(sorted[i].Longitude), parseFloat(sorted[i].Latitude)];
+                  const b: [number, number] = [parseFloat(sorted[i + 1].Longitude), parseFloat(sorted[i + 1].Latitude)];
                   path.push(a, ...interpolateBetween(a, b, 6));
                   timestamps.push(...Array(7).fill(+sorted[i].Timestamp));
                   times.push(...Array(7).fill(sorted[i].Time));
                 }
                 if (path.length < 2) return null;
-                const avgSpeed =
-                  sorted.reduce((acc, r) => acc + parseFloat(r.Speed || "0"), 0) /
-                  (sorted.length || 1);
+                const avgSpeed = sorted.reduce((acc, r) => acc + parseFloat(r.Speed || "0"), 0) / (sorted.length || 1);
                 return {
                   busId,
                   path,
@@ -193,9 +171,7 @@ const AnimatedFlowMap: React.FC = () => {
               })
               .filter(Boolean) as FlowPath[];
 
-            const uniqueOperators = [
-              ...new Set(result.map((r) => r.operator)),
-            ].filter((op) => op && op !== "Unknown");
+            const uniqueOperators = [...new Set(result.map((r) => r.operator))].filter((op) => op && op !== "Unknown");
             setOperators(uniqueOperators);
             setBusFlows(result);
             // Cache the parsed result so it can be reused later.
@@ -274,22 +250,37 @@ const AnimatedFlowMap: React.FC = () => {
 
   return (
     <>
-      <div className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-md rounded-lg shadow-lg p-4 w-72 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold mb-2">📊 Insights</h2>
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-        </p>
+      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <h2 className="text-lg font-semibold">Insights</h2>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>
+            The animation displays the movement of buses across the city, showcasing 68 Madinah Buses and 34,000 Syndicate Buses. The total distance
+            traveled reached 1.7 million kilometers.
+          </span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>Madinah Bus Operators - 68</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>GSC Buses - 34K</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <img src={light_bulb} className="" />
+          <span>Distance Covered 1.7M kilometers</span>
+        </div>
       </div>
 
-      <div style={{ position: "absolute", zIndex: 10, top: 4, left: 4, textAlign: "left", color: "white" }}>
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-80">
         <div style={{ marginBottom: "1rem" }}>
-          <label>Select File:</label>
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            style={{ backgroundColor: "#fff", color: "#000" }}
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
+            <option>Select Date:</option>
             {fileList.map((file) => (
               <option key={file} value={file}>
                 {file}
@@ -300,16 +291,16 @@ const AnimatedFlowMap: React.FC = () => {
         <select
           value={selectedOperator ?? ""}
           onChange={(e) => setSelectedOperator(e.target.value || null)}
-          style={{ backgroundColor: "#fff", color: "#000" }}
+          className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
         >
-          <option value="">All Operators</option>
+          <option value="">Operator Name</option>
           {operators.map((op) => (
             <option key={op} value={op}>
               {op}
             </option>
           ))}
         </select>
-        <label style={{ display: "block", marginTop: 8 }}>Simulated Minutes per Real Minute:</label>
+        {/* <label style={{ display: "block", marginTop: 8 }}>Simulated Minutes per Real Minute:</label>
         <input
           type="number"
           min={1}
@@ -320,21 +311,11 @@ const AnimatedFlowMap: React.FC = () => {
         />
         <div style={{ marginTop: 8 }}>
           <strong>Buses Displayed:</strong> {displayedBusCount}
-        </div>
+        </div> */}
       </div>
 
-      <DeckGL
-        initialViewState={initialViewState}
-        controller={true}
-        layers={[
-          ...(filteredFlows.length > 0 ? [flowHeadsLayer] : []),
-        ]}
-      >
-        <StaticMap
-          mapboxAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v10"
-          style={{ width: "100%", height: "100%" }}
-        />
+      <DeckGL initialViewState={initialViewState} controller={true} layers={[...(filteredFlows.length > 0 ? [flowHeadsLayer] : [])]}>
+        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" style={{ width: "100%", height: "100%" }} />
         {hoverInfo?.object && (
           <div
             style={{
