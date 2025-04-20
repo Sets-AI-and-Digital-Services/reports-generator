@@ -7,6 +7,9 @@ import { useEffect } from "react";
 import WhatWeDelivered from "./features/digitalReports/WhatWeDelivered/WhatWeDelivered";
 import WhatWeFound from "./features/digitalReports/WhatWeFound";
 import ThankYou from "./features/digitalReports/ThankYou";
+import WhatWeAimFor from "./features/digitalReports/WhatWeAimFor";
+import KeyTrendsAndInsights from "./features/digitalReports/KeyTrendsAndInsights";
+import NextSteps from "./features/digitalReports/NextSteps";
 
 function App() {
   useEffect(() => {
@@ -19,6 +22,9 @@ function App() {
       <WhatWeActedOn />
       <WhatWeDelivered />
       <WhatWeFound />
+      <WhatWeAimFor />
+      <KeyTrendsAndInsights />
+      <NextSteps />
       <ThankYou />
     </>
   );
