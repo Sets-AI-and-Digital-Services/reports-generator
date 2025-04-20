@@ -7,11 +7,28 @@ import BusVolumeTable from "../BusVolumeTable/BusVolumeTable";
 const WhatWeFound: React.FC = () => {
   return (
     <>
+      <section className="w-full px-4 py-16 bg-[#fff]">
+        <div className="max-w-6xl mx-auto text-center">
+          {/* Section Title */}
+          <p className="mb-12 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
+
+          {/* Slider Component with Animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="rounded-3xl"
+          >
+            <ScrollableCharts />
+          </motion.div>
+        </div>
+      </section>
+
       <section className="w-full py-16 bg-[#fff]">
         <div className="mx-auto text-center">
           {/* Section Title */}
-          <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
-          <p className="mb-6 text-xl font-medium md:text-3xl text-[#939598]">Pilgrim route tracking</p>
+          <p className="mb-6 text-xl font-medium md:text-3xl text-primary">Pilgrim Route Tracking</p>
 
           {/* Slider Component with Animation */}
           <motion.div
@@ -28,9 +45,6 @@ const WhatWeFound: React.FC = () => {
 
       <section className="w-full py-16 bg-gradient-to-b from-white to-[#dff1ed]">
         <div className="mx-auto text-center">
-          {/* Section Title */}
-          <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
-
           {/* Slider Component with Animation */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -40,24 +54,6 @@ const WhatWeFound: React.FC = () => {
             className="rounded-3xl"
           >
             <BusVolumeTable />
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="w-full px-4 py-16 bg-[#dff1ed]">
-        <div className="max-w-6xl mx-auto text-center">
-          {/* Section Title */}
-          <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
-
-          {/* Slider Component with Animation */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="rounded-3xl"
-          >
-            <ScrollableCharts />
           </motion.div>
         </div>
       </section>

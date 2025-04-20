@@ -16,6 +16,9 @@ const WhatWeActedOn: React.FC = () => {
     triggerOnce: true,
   });
 
+  const firstRowWidths = ["w-[27%]", "w-[20%]", "w-[43%]"];
+  const secondRowWidths = ["w-[34%]", "w-[35%]", "w-[24%]"];
+
   return (
     <section
       className="w-full px-4 py-16 bg-center bg-no-repeat bg-cover"
@@ -25,43 +28,54 @@ const WhatWeActedOn: React.FC = () => {
     >
       <div className="max-w-4xl mx-auto text-center" ref={ref}>
         {/* Title */}
-        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">
-          What We Acted On
-        </p>
-
-        {/* Combined Image */}
-        <div className="p-4 mb-12 overflow-hidden bg-white shadow rounded-xl">
-          <img
-            src="/assets/actedon.png"
-            alt="What We Acted On"
-            className="object-cover w-full h-auto"
-          />
-        </div>
+        <p className="mb-8 text-3xl font-bold md:text-5xl text-primary">What We Acted On</p>
 
         {/* Stats */}
-        <div className="grid max-w-5xl grid-cols-1 gap-4 mx-auto sm:grid-cols-2 md:grid-cols-3">
-          {stats.map((stat, index) => (
+        {/* First Row */}
+        <div className="flex flex-wrap justify-center gap-6 mb-6">
+          {stats.slice(0, 3).map((stat, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 p-4 bg-white shadow-md rounded-xl"
+              className={`flex items-center gap-4 p-6 rounded-xl shadow-md bg-white text-start ${firstRowWidths[index]} min-w-[200px]`}
             >
-              <p className="text-2xl font-bold text-primary md:text-3xl whitespace-nowrap">
+              <p className="text-3xl font-bold text-primary md:text-4xl">
                 {inView ? (
-                  <CountUp
-                    start={0}
-                    end={stat.value}
-                    duration={2}
-                    suffix={stat.suffix || ""}
-                  />
+                  <CountUp start={0} end={stat.value} duration={2} suffix={stat.suffix || ""} />
                 ) : (
                   "0"
                 )}
               </p>
-              <p className="text-sm font-medium leading-snug text-start text-subtitle md:text-base">
+              <p className="mt-2 text-sm font-medium leading-snug text-subtitle md:text-base">
                 {stat.label}
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Second Row */}
+        <div className="flex flex-wrap justify-center gap-6">
+          {stats.slice(3, 6).map((stat, index) => (
+            <div
+              key={index + 3}
+              className={`flex items-center gap-4 p-6 rounded-xl shadow-md bg-white text-start ${secondRowWidths[index]} min-w-[200px]`}
+            >
+              <p className="text-3xl font-bold text-primary md:text-4xl">
+                {inView ? (
+                  <CountUp start={0} end={stat.value} duration={2} suffix={stat.suffix || ""} />
+                ) : (
+                  "0"
+                )}
+              </p>
+              <p className="mt-2 text-sm font-medium leading-snug text-subtitle md:text-base">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Combined Image */}
+        <div className="p-4 mt-5 overflow-hidden bg-white shadow rounded-xl">
+          <img src="/assets/actedon.svg" alt="What We Acted On" className="object-cover w-full h-auto" />
         </div>
       </div>
     </section>

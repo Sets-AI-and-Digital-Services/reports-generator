@@ -1,10 +1,12 @@
-
 const LiveDashboard = () => {
-  return <div className="h-full"> <img
-  src="/assets/dash.png"
-  alt="map"
-  className="w-full my-auto"
-/></div>;
+  return (
+    <div className="h-full">
+      <video autoPlay loop muted playsInline className="absolute top-0 left-0 z-0 object-cover object-top w-full h-full">
+        <source src="/assets/live_dashboard.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
 };
 
 export default LiveDashboard;

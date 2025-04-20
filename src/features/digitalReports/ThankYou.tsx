@@ -8,25 +8,25 @@ const ThankYou: React.FC = () => {
       <img
         src="/assets/grid-bg.png" // or .png depending on your file
         alt="grid"
-        className="absolute bottom-0 left-0 object-cover w-full h-full pointer-events-none select-none"
+        className="absolute -bottom-64 left-0 object-cover w-full h-full pointer-events-none select-none"
         // style={{ zIndex: -1 }}
       />
 
       {/* Centered Content */}
       <div className="z-10">
-        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">
+        <p className="mb-6 text-3xl font-bold md:text-7xl text-primary">
           Thank You
         </p>
-        {/* <p className="max-w-xl mx-auto mb-12 text-lg md:text-2xl text-subtitle">
+        <p className="max-w-6xl mx-auto mb-20 text-lg md:text-5xl text-[#939598] font-medium">
           Lorem Ipsum is simply dummy text of the printing and typesetting
           industry.
-        </p> */}
+        </p>
 
         {/* Logo */}
         <img
           src="/assets/madinah-logo.svg"
           alt="Madinah Regional Municipality"
-          className="mx-auto w-44 md:w-52"
+          className="mx-auto w-44 md:w-72"
         />
       </div>
     </section>

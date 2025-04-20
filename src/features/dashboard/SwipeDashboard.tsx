@@ -8,15 +8,15 @@ import BusTrafficChart from "./componnets/charts/BarPopulationChart";
 import ExcelReaderRadar from "./componnets/charts/radarChart/ExcelReaderRadar";
 import light_bulb from "../../../public/assets/light_bulb.svg";
 
-const SwipeDashboard = () => {
+const SwipeDashboard = ({ setCurrentSlide }: { setCurrentSlide: (index: number) => void }) => {
   return (
-    <div className="w-full overflow-x-hidden text-white bg-black border rounded-xl">
-      <SwipeContainer>
+    <div className="w-full overflow-x-hidden text-white bg-black border rounded-xl relative">
+      <SwipeContainer setCurrentSlide={setCurrentSlide}>
         <SwipeCard title="trajectory-map">
           <AnimatedFlowMap />
         </SwipeCard>
         <SwipeCard title="Live Map View">
-          <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+          <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-16 right-16 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
             <h2 className="text-lg font-semibold">Insights</h2>
             <div className="flex items-start gap-2">
               <img src={light_bulb} className="" />

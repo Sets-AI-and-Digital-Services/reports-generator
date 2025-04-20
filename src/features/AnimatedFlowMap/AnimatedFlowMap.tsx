@@ -250,7 +250,7 @@ const AnimatedFlowMap: React.FC = () => {
 
   return (
     <>
-      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
         <h2 className="text-lg font-semibold">Insights</h2>
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
@@ -273,17 +273,17 @@ const AnimatedFlowMap: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute top-8 left-8 text-left text-white z-10 w-80">
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-40">
         <div style={{ marginBottom: "1rem" }}>
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
-            <option>Select Date:</option>
+            <option>Select Date</option>
             {fileList.map((file) => (
               <option key={file} value={file}>
-                {file}
+                {file.replace(".csv", "")}
               </option>
             ))}
           </select>
@@ -291,7 +291,7 @@ const AnimatedFlowMap: React.FC = () => {
         <select
           value={selectedOperator ?? ""}
           onChange={(e) => setSelectedOperator(e.target.value || null)}
-          className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+          className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
         >
           <option value="">Operator Name</option>
           {operators.map((op) => (

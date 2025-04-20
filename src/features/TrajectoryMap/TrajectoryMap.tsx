@@ -81,7 +81,6 @@ const TrajectoryMap: React.FC = () => {
   useEffect(() => {
     setLoadingFile(true);
     // Build a full file path for the CSV file.
-    const filePath = `${API_BASE_URL}/data/output/${selectedFile}`;
     fetch(`${API_BASE_URL}/aggregated-transitions?file_path=${selectedFile}&resolution=0.01`)
       .then((res) => res.json())
       .then((data) => {
@@ -143,22 +142,22 @@ const TrajectoryMap: React.FC = () => {
   });
 
   // File navigation handlers.
-  const currentFileIndex = fileList.indexOf(selectedFile);
-  const goToPreviousFile = () => {
-    if (currentFileIndex > 0) {
-      setSelectedFile(fileList[currentFileIndex - 1]);
-    }
-  };
+  // const currentFileIndex = fileList.indexOf(selectedFile);
+  // const goToPreviousFile = () => {
+  //   if (currentFileIndex > 0) {
+  //     setSelectedFile(fileList[currentFileIndex - 1]);
+  //   }
+  // };
 
-  const goToNextFile = () => {
-    if (currentFileIndex < fileList.length - 1) {
-      setSelectedFile(fileList[currentFileIndex + 1]);
-    }
-  };
+  // const goToNextFile = () => {
+  //   if (currentFileIndex < fileList.length - 1) {
+  //     setSelectedFile(fileList[currentFileIndex + 1]);
+  //   }
+  // };
 
   return (
     <>
-      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-72 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+      <div className="insights absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
         <h2 className="text-lg font-semibold">Insights</h2>
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
@@ -192,17 +191,17 @@ const TrajectoryMap: React.FC = () => {
       </div>
 
       {/* Controls div on top of map */}
-      <div className="absolute top-8 left-8 text-left text-white z-10 w-80">
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-40">
         <div style={{ marginBottom: "1rem" }}>
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
             <option value="">Select Date</option>
             {fileList.map((file) => (
               <option key={file} value={file}>
-                {file}
+                {file.replace(".csv", "")}
               </option>
             ))}
           </select>
@@ -211,7 +210,7 @@ const TrajectoryMap: React.FC = () => {
           <select
             value={selectedOperator || ""}
             onChange={(e) => setSelectedOperator(e.target.value || null)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
             <option value="">Operator Name</option>
             {operators.map((op) => (
@@ -231,11 +230,11 @@ const TrajectoryMap: React.FC = () => {
 
       {/* Navigation div on bottom center */}
       {loadingFile && (
-        <div className="absolute left-0 right-0 bottom-24 z-10 m-auto w-fit flex rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <div className="absolute left-0 right-0 bottom-24 z-10 m-auto w-fit flex rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
           <img src={loader_img} /> The map will be updated shortly
         </div>
       )}
-      <div
+      {/* <div
         className="flex gap-2"
         style={{
           position: "absolute",
@@ -252,7 +251,7 @@ const TrajectoryMap: React.FC = () => {
         <button
           onClick={goToPreviousFile}
           disabled={currentFileIndex <= 0}
-          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
+          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
         >
           <img src={left_arrow} /> Previous
         </button>
@@ -260,11 +259,11 @@ const TrajectoryMap: React.FC = () => {
           onClick={goToNextFile}
           disabled={currentFileIndex >= fileList.length - 1}
           style={{ marginLeft: "10px" }}
-          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
+          className="flex items-center justify-center rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white w-[104px]"
         >
           Next <img src={right_arrow} />
         </button>
-      </div>
+      </div> */}
 
       <DeckGL initialViewState={initialViewState} controller layers={[pathLayer]}>
         <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" style={{ width: "100%", height: "100%" }} />

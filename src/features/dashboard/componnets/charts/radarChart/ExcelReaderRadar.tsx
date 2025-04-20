@@ -123,7 +123,7 @@ const ExcelReaderRadar: React.FC = () => {
   return (
     <div className="flex flex-col justify-start w-full h-full p-4 overflow-hidden">
       {insights && (
-        <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-4 right-8 w-80 h-40 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-white/16 backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-4 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
           <h2 className="text-lg font-semibold">Insights</h2>
           {insights?.["Description"] && <div className="flex items-start gap-2">
             <img src={light_bulb} className="" />
@@ -148,15 +148,13 @@ const ExcelReaderRadar: React.FC = () => {
         </div>
       )}
 
-      <div className="flex items-end justify-center gap-5 align-middle">
-        {" "}
-        <h2 className="my-8 text-2xl font-semibold text-center text-white">{selectedStation}</h2>
+      <div className="flex items-end gap-5 align-middle">
         {/* Dropdown to switch stations */}
         <div className="flex justify-center mb-6">
           <select
             value={selectedStation}
             onChange={(e) => setSelectedStation(e.target.value)}
-            className="px-4 py-2 text-white bg-gray-700 rounded-md"
+            className="px-4 py-2 text-white text-center bg-gray-700 rounded-md"
           >
             {stationList.map((station) => (
               <option key={station} value={station}>

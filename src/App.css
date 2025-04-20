@@ -11,6 +11,11 @@ body {
   overflow-y: auto;
 
 }
+
+* {
+  box-sizing: border-box;
+}
+
 /* Scrollbar */
 
 /* width */
@@ -51,3 +56,12 @@ body {
     display: none; 
     Chrome/Safari
   } */
+
+.insights::-webkit-scrollbar {
+  height: 5px;
+  width: 2px;
+}
+.insights::-webkit-scrollbar-thumb {
+  background: teal;
+  border-radius: 10px;
+}
