@@ -10,6 +10,7 @@ import ThankYou from "./features/digitalReports/ThankYou";
 import WhatWeAimFor from "./features/digitalReports/WhatWeAimFor";
 import KeyTrendsAndInsights from "./features/digitalReports/KeyTrendsAndInsights";
 import NextSteps from "./features/digitalReports/NextSteps";
+import BenefitsToTheCity from "./features/digitalReports/BenefitsToTheCity";
 
 function App() {
   useEffect(() => {
@@ -19,6 +20,7 @@ function App() {
     <>
       <HeroSection />
       <WhatWePromised />
+      <BenefitsToTheCity />
       <WhatWeActedOn />
       <WhatWeDelivered />
       <WhatWeFound />
