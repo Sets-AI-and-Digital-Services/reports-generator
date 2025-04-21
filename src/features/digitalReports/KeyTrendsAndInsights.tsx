@@ -7,7 +7,7 @@ const KeyTrendsAndInsights: React.FC = () => {
     <section className="w-full h-screen py-8 bg-gradient-to-b from-white to-[#dff1ed]">
       <div className="mx-auto text-center">
         {/* Section Title */}
-        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">Key Trends and Insights</p>
+        <p className="text-3xl md:text-7xl text-primary font-medium mb-12">Recommendations</p>
 
         {/* Slider Component with Animation */}
         <motion.div
@@ -17,7 +17,38 @@ const KeyTrendsAndInsights: React.FC = () => {
           viewport={{ once: true }}
           className="rounded-3xl"
         >
-          <div className="w-3/5 m-auto pt-12 flex flex-col gap-4 text-left text-2xl font-normal">
+          <div className="flex flex-col gap-3 items-center w-[75rem] m-auto font-normal text-2xl">
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_1.svg" />
+              <span>Establish clear policies for bus entry into the central area</span>
+            </div>
+
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_2.svg" />
+              <span>Restrict the role of the GSC buses to and from hotels</span>
+            </div>
+
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_3.svg" />
+              <span>Jawlah dedicated fleet for city sightseeing tours, preventing GSC buses </span>
+            </div>
+
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_4.svg" />
+              <span>Madinah Buses shuttle buses to serve main corridors</span>
+            </div>
+
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_5.svg" />
+              <span>Seasonal terminals at city entry points, shuttle buses operating on main corridors</span>
+            </div>
+
+            <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
+              <img src="/assets/recommendations_6.svg" />
+              <span>Allocate seasonal parking areas outside the city for GSC buses</span>
+            </div>
+          </div>
+          {/* <div className="w-3/5 m-auto pt-12 flex flex-col gap-4 text-left text-2xl font-normal">
             <div className="w-full h-[156px] rounded-[12px] p-[16px] pt-[16px] pb-[16px] pr-[12px] pl-[12px] gap-[12px] bg-white border border-[#F3FCF6] shadow-[0px_4.27px_6.41px_rgba(180,201,194,0.1)] flex items-start">
               <div className="w-12 h-12 flex-shrink-0">
                 <img src={light_bulb} className="w-full" />
@@ -90,7 +121,7 @@ const KeyTrendsAndInsights: React.FC = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
         </motion.div>
       </div>
     </section>
