@@ -117,10 +117,10 @@ function App() {
 
   return (
     <>
-      <div ref={registerRef} className="h-screen"><HeroSection /></div>
-      <div ref={registerRef} className="h-screen"><WhatWePromised /></div>
-      <div ref={registerRef} className="h-screen"><BenefitsToTheCity /></div>
-      <div ref={registerRef} className="h-screen"><WhatWeActedOn /></div>
+      <div ref={registerRef} className="h-screen z-10"><HeroSection /></div>
+      <div ref={registerRef} className="h-screen z-20"><WhatWePromised /></div>
+      {/* <div ref={registerRef} className="h-screen z-30"><BenefitsToTheCity /></div> */}
+      <div ref={registerRef} className="h-screen z-40"><WhatWeActedOn /></div>
       <div ref={registerRef} className="h-screen"><WhatWeDelivered /></div>
       <div ref={registerRef} className="h-screen"><WhatWeFound /></div>
       <div ref={registerRef} className="h-screen"><PilgrimsRouteTracking /></div>

@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Background Video */}
-      <video
+      {/* <video
         autoPlay
         loop
         muted
@@ -20,10 +20,12 @@ const HeroSection: React.FC = () => {
       >
         <source src="/assets/banner-video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
+      </video> */}
+
+      <img src="/assets/intro.svg" className="absolute top-0 left-0 z-0 object-cover w-full h-full" />
 
       {/* Overlay */}
-      <div className="absolute inset-0 z-10 bg-black bg-opacity-50" />
+      {/* <div className="absolute inset-0 z-10 bg-black bg-opacity-50" /> */}
 
       {/* Top-right Logo */}
       <img

@@ -52,7 +52,7 @@ const AnimatedFlowMap: React.FC = () => {
   const initialViewState = {
     latitude: 24.4709,
     longitude: 39.6122,
-    zoom: 11,
+    zoom: 14,
     bearing: 0,
     pitch: 30,
   };

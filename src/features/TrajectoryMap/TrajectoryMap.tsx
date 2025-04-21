@@ -53,7 +53,7 @@ const TrajectoryMap: React.FC = () => {
   const initialViewState = {
     latitude: 24.4709,
     longitude: 39.6122,
-    zoom: 10,
+    zoom: 11,
     bearing: 0,
     pitch: 30,
   };
