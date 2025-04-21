@@ -20,12 +20,12 @@ const WhatWeDelivered: React.FC = () => {
 
   return (
     <section className="w-full h-screen px-4 py-10 bg-gradient-to-b from-white to-[#dff1ed]">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-[80%] mx-auto">
         <h2 className="mb-28 text-3xl font-bold text-center md:text-5xl text-primary">What We Delivered</h2>
 
         <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
           {/* Tabs List */}
-          <div className="flex flex-col flex-1 gap-4">
+          <div className="flex flex-col gap-4 w-2/6">
             {deliveryItems.map((item) => (
               <DeliveryItem
                 key={item.key}
@@ -38,7 +38,7 @@ const WhatWeDelivered: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 min-h-[300px] h-[28rem] relative my-auto overflow-hidden">
+          <div className="flex-1 min-h-[300px] h-[38rem] relative my-auto overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeKey}
