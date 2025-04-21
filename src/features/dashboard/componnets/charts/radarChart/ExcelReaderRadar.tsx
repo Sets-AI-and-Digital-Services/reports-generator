@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import BusRadarChart from "./BusRadarChart";
 import light_bulb from "../../../../../../public/assets/light_bulb.svg";
+import { ChevronDown } from "lucide-react";
 
 interface DataRow {
   Station: string;
@@ -119,16 +120,19 @@ const ExcelReaderRadar: React.FC = () => {
   }, []);
 
   const filterData = (rows: DataRow[]) => rows.filter((row) => row.Station === selectedStation);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="flex flex-col justify-start w-full h-full p-4 overflow-hidden">
       {insights && (
-        <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-4 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+        <div className="insights absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-4 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
           <h2 className="text-lg font-semibold">Insights</h2>
-          {insights?.["Description"] && <div className="flex items-start gap-2">
-            <img src={light_bulb} className="" />
-            <span>{insights["Description"]}</span>
-          </div>}
+          {insights?.["Description"] && (
+            <div className="flex items-start gap-2">
+              <img src={light_bulb} className="" />
+              <span>{insights["Description"]}</span>
+            </div>
+          )}
           <div className="flex items-start gap-2">
             <img src={light_bulb} className="" />
             <span>Bus Count: {insights["Bus Count"]}</span>
@@ -151,17 +155,35 @@ const ExcelReaderRadar: React.FC = () => {
       <div className="flex items-end gap-5 align-middle">
         {/* Dropdown to switch stations */}
         <div className="flex justify-center mb-6">
-          <select
-            value={selectedStation}
-            onChange={(e) => setSelectedStation(e.target.value)}
-            className="px-4 py-2 text-white text-center bg-gray-700 rounded-md"
-          >
-            {stationList.map((station) => (
-              <option key={station} value={station}>
-                {station}
-              </option>
-            ))}
-          </select>
+          <div className="relative w-56 text-left">
+            {/* Trigger Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full text-white bg-gray-700 rounded-md px-4 py-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]] flex justify-between items-center"
+            >
+              <span>{selectedStation || "None"}</span>
+              <ChevronDown className="ml-2 w-4 h-4" />
+            </button>
+
+            {/* Dropdown */}
+            {isOpen && (
+              <ul className="insights absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-white bg-opacity-10 backdrop-blur-lg text-white rounded-md shadow-lg border border-[#939598] scrollbar-thin scrollbar-thumb-[#00977D] scrollbar-track-transparent">
+                {stationList.map((station) => (
+                  <li
+                    key={station}
+                    onClick={() => {
+                      setSelectedStation(station);
+                      setIsOpen(false);
+                    }}
+                    className={`
+                      px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedStation === station && "bg-[#00977D]"} bg-opacity-60`}
+                  >
+                    {station}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
 
@@ -173,7 +195,7 @@ const ExcelReaderRadar: React.FC = () => {
 
         <div>
           <h2 className="mb-2 text-lg font-semibold text-center text-white">Waiting Time</h2>
-          <BusRadarChart stationName={selectedStation} data={{ "wait time": filterData(waitTimeData) }} colorMap={{ "wait time": "darkorange" }} />
+          <BusRadarChart stationName={selectedStation} data={{ "Wait Time": filterData(waitTimeData) }} colorMap={{ "Wait Time": "darkorange" }} />
         </div>
 
         <div>

@@ -1,15 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ScrollableCharts } from "./ScrollableCharts";
 import BusVolumeTable from "../BusVolumeTable/BusVolumeTable";
 
-const WhatWeFound: React.FC = ({ ref }: { ref?: any }) => {
+const BusCountAndDwellingTimes: React.FC = () => {
   return (
-    <section ref={ref} className="w-full h-screen px-4 py-4 bg-[#fff]">
-      <div className="max-w-6xl mx-auto text-center">
-        {/* Section Title */}
-        <p className="mb-12 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
-
+    <section className="w-full h-screen py-16 bg-gradient-to-b from-white to-[#dff1ed] relative z-10">
+      <div className="mx-auto text-center">
         {/* Slider Component with Animation */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -18,11 +14,11 @@ const WhatWeFound: React.FC = ({ ref }: { ref?: any }) => {
           viewport={{ once: true }}
           className="rounded-3xl"
         >
-          <ScrollableCharts />
+          <BusVolumeTable />
         </motion.div>
       </div>
     </section>
   );
 };
 
-export default WhatWeFound;
+export default BusCountAndDwellingTimes;

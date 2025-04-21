@@ -21,7 +21,7 @@ const WhatWeActedOn: React.FC = () => {
 
   return (
     <section
-      className="w-full px-4 py-16 bg-center bg-no-repeat bg-cover"
+      className="w-full h-screen px-4 py-16 bg-center bg-no-repeat bg-cover"
       style={{
         backgroundImage: "url('/assets/actedonBackground.png')",
       }}
@@ -32,7 +32,7 @@ const WhatWeActedOn: React.FC = () => {
 
         {/* Stats */}
         {/* First Row */}
-        <div className="flex flex-wrap justify-center gap-6 mb-6">
+        <div className="flex flex-wrap justify-center gap-4 mb-4">
           {stats.slice(0, 3).map((stat, index) => (
             <div
               key={index}
@@ -53,7 +53,7 @@ const WhatWeActedOn: React.FC = () => {
         </div>
 
         {/* Second Row */}
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-4">
           {stats.slice(3, 6).map((stat, index) => (
             <div
               key={index + 3}

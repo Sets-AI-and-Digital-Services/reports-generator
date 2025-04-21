@@ -163,7 +163,7 @@ export default function BarMap() {
 
   return (
     <>
-      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+      <div className="insights absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
         <h2 className="text-lg font-semibold">Insights</h2>
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />

@@ -1,14 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ScrollableCharts } from "./ScrollableCharts";
-import BusVolumeTable from "../BusVolumeTable/BusVolumeTable";
+import pilgrims_route_tracking from "../../../public/assets/pilgrims_route_tracking.svg";
 
-const WhatWeFound: React.FC = ({ ref }: { ref?: any }) => {
+const PilgrimsRouteTracking: React.FC = () => {
   return (
-    <section ref={ref} className="w-full h-screen px-4 py-4 bg-[#fff]">
-      <div className="max-w-6xl mx-auto text-center">
+    <section className="w-full h-screen py-4 bg-[#fff]">
+      <div className="mx-auto text-center">
         {/* Section Title */}
-        <p className="mb-12 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
+        <p className="mb-6 text-xl font-medium md:text-3xl text-primary">Pilgrim Route Tracking</p>
 
         {/* Slider Component with Animation */}
         <motion.div
@@ -18,11 +17,11 @@ const WhatWeFound: React.FC = ({ ref }: { ref?: any }) => {
           viewport={{ once: true }}
           className="rounded-3xl"
         >
-          <ScrollableCharts />
+          <img src={pilgrims_route_tracking} className="w-full h-full" />
         </motion.div>
       </div>
     </section>
   );
 };
 
-export default WhatWeFound;
+export default PilgrimsRouteTracking;

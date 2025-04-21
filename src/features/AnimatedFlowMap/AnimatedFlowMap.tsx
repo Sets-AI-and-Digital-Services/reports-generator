@@ -4,6 +4,7 @@ import StaticMap from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Papa from "papaparse";
 import light_bulb from "../../../public/assets/light_bulb.svg";
+import { ChevronDown } from "lucide-react";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -247,10 +248,12 @@ const AnimatedFlowMap: React.FC = () => {
     radiusUnits: "meters",
     pickable: false,
   });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOperatorOpen, setIsOperatorOpen] = useState(false);
 
   return (
     <>
-      <div className="absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
+      <div className="insights absolute flex flex-col z-10 text-left overflow-y-auto text-sm top-8 right-8 w-80 h-32 rounded-[11.76px] p-4 gap-2 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] text-white">
         <h2 className="text-lg font-semibold">Insights</h2>
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
@@ -273,33 +276,85 @@ const AnimatedFlowMap: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute top-8 left-8 text-left text-white z-10 w-40">
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-56">
         <div style={{ marginBottom: "1rem" }}>
-          <select
-            value={selectedFile}
-            onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
-          >
-            <option>Select Date</option>
-            {fileList.map((file) => (
-              <option key={file} value={file}>
-                {file.replace(".csv", "")}
-              </option>
-            ))}
-          </select>
+          <div className="relative w-full">
+            {/* Trigger */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
+            >
+              <span className="truncate">
+                <span className="opacity-70">Select Date:</span> {selectedFile ? selectedFile.replace(".csv", "") : "None"}
+              </span>
+              <ChevronDown className="ml-2 w-4 h-4" />
+            </button>
+
+            {/* Dropdown */}
+            {isOpen && (
+              <ul className="insights absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-white bg-opacity-10 backdrop-blur-lg text-white rounded-[11.76px] shadow-lg border border-[#939598] scrollbar-thin scrollbar-thumb-[#00977D] scrollbar-track-transparent">
+                {fileList.map((file) => (
+                  <li
+                    key={file}
+                    onClick={() => {
+                      setSelectedFile(file);
+                      setIsOpen(false);
+                    }}
+                    className={`
+                px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20
+                ${selectedFile === file && "bg-[#00977D]"} bg-opacity-60`}
+                  >
+                    {file.replace(".csv", "")}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-        <select
-          value={selectedOperator ?? ""}
-          onChange={(e) => setSelectedOperator(e.target.value || null)}
-          className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
-        >
-          <option value="">Operator Name</option>
-          {operators.map((op) => (
-            <option key={op} value={op}>
-              {op}
-            </option>
-          ))}
-        </select>
+
+        <div className="relative w-full">
+          {/* Trigger Button */}
+          <button
+            onClick={() => setIsOperatorOpen(!isOperatorOpen)}
+            className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
+          >
+            <span className="truncate">{selectedOperator ?? "Operator Name"}</span>
+            <ChevronDown className="ml-2 w-4 h-4" />
+          </button>
+
+          {/* Dropdown List */}
+          {isOperatorOpen && (
+            <ul className="insights absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-white bg-opacity-10 backdrop-blur-lg text-white rounded-[11.76px] shadow-lg border border-[#939598] scrollbar-thin scrollbar-thumb-[#00977D] scrollbar-track-transparent">
+              {/* None option */}
+              <li
+                onClick={() => {
+                  setSelectedOperator(null);
+                  setIsOperatorOpen(false);
+                }}
+                className={`
+              px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === null && "bg-[#00977D]"} bg-opacity-60`}
+              >
+                None
+              </li>
+
+              {/* Operator list */}
+              {operators.map((op) => (
+                <li
+                  key={op}
+                  onClick={() => {
+                    setSelectedOperator(op);
+                    setIsOperatorOpen(false);
+                  }}
+                  className={`
+                px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === op && "bg-[#00977D]"} bg-opacity-60`}
+                >
+                  {op}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {/* <label style={{ display: "block", marginTop: 8 }}>Simulated Minutes per Real Minute:</label>
         <input
           type="number"

@@ -17,10 +17,10 @@ const ThankYou: React.FC = () => {
         <p className="mb-6 text-3xl font-bold md:text-7xl text-primary">
           Thank You
         </p>
-        <p className="max-w-6xl mx-auto mb-20 text-lg md:text-5xl text-[#939598] font-medium">
+        {/* <p className="max-w-6xl mx-auto mb-20 text-lg md:text-5xl text-[#939598] font-medium">
           Lorem Ipsum is simply dummy text of the printing and typesetting
           industry.
-        </p>
+        </p> */}
 
         {/* Logo */}
         <img

@@ -8,6 +8,7 @@ import left_arrow from "../../../public/assets/left_arrow.svg";
 import right_arrow from "../../../public/assets/right_arrow.svg";
 import loader_img from "../../../public/assets/loader.svg";
 import light_bulb from "../../../public/assets/light_bulb.svg";
+import { ChevronDown } from "lucide-react";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 // Set the API base URL so that it is a complete URL
@@ -154,6 +155,8 @@ const TrajectoryMap: React.FC = () => {
   //     setSelectedFile(fileList[currentFileIndex + 1]);
   //   }
   // };
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOperatorOpen, setIsOperatorOpen] = useState(false);
 
   return (
     <>
@@ -165,7 +168,8 @@ const TrajectoryMap: React.FC = () => {
         </div>
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
-          <span>Top Sources:
+          <span>
+            Top Sources:
             <li>Jeddah</li>
             <li>Makkah</li>
             <li>Riyadh</li>
@@ -191,34 +195,82 @@ const TrajectoryMap: React.FC = () => {
       </div>
 
       {/* Controls div on top of map */}
-      <div className="absolute top-8 left-8 text-left text-white z-10 w-40">
+      <div className="absolute top-8 left-8 text-left text-white z-10 w-56">
         <div style={{ marginBottom: "1rem" }}>
-          <select
-            value={selectedFile}
-            onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
-          >
-            <option value="">Select Date</option>
-            {fileList.map((file) => (
-              <option key={file} value={file}>
-                {file.replace(".csv", "")}
-              </option>
-            ))}
-          </select>
+          <div className="relative w-full">
+            {/* Trigger */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
+            >
+              <span className="truncate">
+                <span className="opacity-70">Select Date:</span> {selectedFile ? selectedFile.replace(".csv", "") : "None"}
+              </span>
+              <ChevronDown className="ml-2 w-4 h-4" />
+            </button>
+
+            {/* Dropdown */}
+            {isOpen && (
+              <ul className="insights absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-white bg-opacity-10 backdrop-blur-lg text-white rounded-[11.76px] shadow-lg border border-[#939598] scrollbar-thin scrollbar-thumb-[#00977D] scrollbar-track-transparent">
+                {fileList.map((file) => (
+                  <li
+                    key={file}
+                    onClick={() => {
+                      setSelectedFile(file);
+                      setIsOpen(false);
+                    }}
+                    className={`
+                px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20
+                ${selectedFile === file && "bg-[#00977D]"} bg-opacity-60`}
+                  >
+                    {file.replace(".csv", "")}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-        <div>
-          <select
-            value={selectedOperator || ""}
-            onChange={(e) => setSelectedOperator(e.target.value || null)}
-            className="w-full text-white bg-gray-700 rounded-[11.76px] px-2 py-2 gap-1 border border-[#939598] bg-transparent backdrop-blur-[12px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+        <div className="relative w-full">
+          {/* Trigger Button */}
+          <button
+            onClick={() => setIsOperatorOpen(!isOperatorOpen)}
+            className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
           >
-            <option value="">Operator Name</option>
-            {operators.map((op) => (
-              <option key={op} value={op}>
-                {op}
-              </option>
-            ))}
-          </select>
+            <span className="truncate">{selectedOperator ?? "Operator Name"}</span>
+            <ChevronDown className="ml-2 w-4 h-4" />
+          </button>
+
+          {/* Dropdown List */}
+          {isOperatorOpen && (
+            <ul className="insights absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-white bg-opacity-10 backdrop-blur-lg text-white rounded-[11.76px] shadow-lg border border-[#939598] scrollbar-thin scrollbar-thumb-[#00977D] scrollbar-track-transparent">
+              {/* None option */}
+              <li
+                onClick={() => {
+                  setSelectedOperator(null);
+                  setIsOperatorOpen(false);
+                }}
+                className={`
+                      px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === null && "bg-[#00977D]"} bg-opacity-60`}
+              >
+                None
+              </li>
+
+              {/* Operator list */}
+              {operators.map((op) => (
+                <li
+                  key={op}
+                  onClick={() => {
+                    setSelectedOperator(op);
+                    setIsOperatorOpen(false);
+                  }}
+                  className={`
+                        px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === op && "bg-[#00977D]"} bg-opacity-60`}
+                >
+                  {op}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         <div className="flex gap-4" style={{ marginTop: "10px" }}>
           {/* Additional operator-data loading buttons can be added here if needed */}

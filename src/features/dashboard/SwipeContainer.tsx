@@ -38,7 +38,7 @@ const SwipeContainer = ({ children, setCurrentSlide }: { children: React.ReactNo
   }, []);
 
   return (
-    <div className="relative w-full">
+    <div data-no-scroll className="relative w-full">
       {!isAtStart && (
         <button onClick={() => scrollByCard("left")} className="absolute z-10 p-2 transform -translate-y-1/2 rounded-full left-2 top-1/2">
           <img src={left_arrow} width={24} />

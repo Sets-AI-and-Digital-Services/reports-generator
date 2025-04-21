@@ -4,7 +4,7 @@ import what_we_aim_for from "../../../public/assets/what_we_aim_for.svg"
 
 const WhatWeAimFor: React.FC = () => {
   return (
-    <section className="w-full px-4 py-16 bg-[#fff]">
+    <section className="w-full h-screen px-4 py-16 bg-[#fff]">
       <div className="max-w-6xl mx-auto text-center">
         {/* Section Title */}
         <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">

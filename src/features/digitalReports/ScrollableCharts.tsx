@@ -9,7 +9,7 @@ export const ScrollableCharts = () => {
       {/* Map Title */}
       <p className="mb-4 text-2xl font-medium rounded-xl p-4 text-[#F3FCF6] bg-[#40968D] flex justify-between">
         <span>{mapSlide[currentSlide]}</span>
-        <span>{currentSlide + 1}/8</span>
+        <span>{currentSlide + 1}/5</span>
       </p>
       <SwipeDashboard setCurrentSlide={setCurrentSlide} />
     </div>

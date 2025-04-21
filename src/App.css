@@ -27,6 +27,7 @@ body {
 /* Track */
 ::-webkit-scrollbar-track {
   background: #f6f6fb;
+  border-radius: 50%;
 }
 
 /* Handle */
@@ -58,10 +59,25 @@ body {
   } */
 
 .insights::-webkit-scrollbar {
-  height: 5px;
   width: 2px;
 }
 .insights::-webkit-scrollbar-thumb {
   background: teal;
   border-radius: 10px;
+}
+.insights {
+  overflow-y: auto;
+  border-radius: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #00977D transparent;
+}
+
+.insights::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.insights::-webkit-scrollbar-thumb {
+  background-color: teal;
+  border-radius: 8px;
 }

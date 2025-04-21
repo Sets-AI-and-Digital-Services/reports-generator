@@ -4,7 +4,7 @@ import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const KeyTrendsAndInsights: React.FC = () => {
   return (
-    <section className="w-full py-16 bg-gradient-to-b from-white to-[#dff1ed]">
+    <section className="w-full h-screen py-8 bg-gradient-to-b from-white to-[#dff1ed]">
       <div className="mx-auto text-center">
         {/* Section Title */}
         <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">Key Trends and Insights</p>
@@ -17,7 +17,7 @@ const KeyTrendsAndInsights: React.FC = () => {
           viewport={{ once: true }}
           className="rounded-3xl"
         >
-          <div className="w-3/5 m-auto pt-12 flex flex-col gap-6 text-left text-2xl font-normal">
+          <div className="w-3/5 m-auto pt-12 flex flex-col gap-4 text-left text-2xl font-normal">
             <div className="w-full h-[156px] rounded-[12px] p-[16px] pt-[16px] pb-[16px] pr-[12px] pl-[12px] gap-[12px] bg-white border border-[#F3FCF6] shadow-[0px_4.27px_6.41px_rgba(180,201,194,0.1)] flex items-start">
               <div className="w-12 h-12 flex-shrink-0">
                 <img src={light_bulb} className="w-full" />
