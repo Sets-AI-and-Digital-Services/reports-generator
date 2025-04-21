@@ -1,11 +1,30 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const NextSteps = () => {
+  const [activeMarker, setActiveMarker] = useState<number | null>(null);
+
+  const markers = [
+    { id: 1, top: "62%", left: "14%", text: "Select and prepare the control center location.", width: "20rem" },
+    { id: 2, top: "30%", left: "27%", text: "Develop the control center system.", width: "20rem" },
+    { id: 3, top: "50%", left: "40%", text: "Enhance integration and coordination with stakeholders.", width: "25rem" },
+    { id: 4, top: "78%", left: "32%", text: "Development of the control center’s operational system.", width: "25rem" },
+    { id: 5, top: "65%", left: "56%", text: "Hajj operational assessment.", width: "15rem" },
+    { id: 6, top: "57%", left: "81%", text: "Control center governance.", width: "15rem" },
+    { id: 7, top: "38%", left: "60%", text: "Operation of the center.", width: "14rem" },
+    {
+      id: 8,
+      top: "90%",
+      left: "95%",
+      text: "To ensure the effective operation of the control room, the following positions are recommended: Control Room Manager, Shift Coordinators, Control Room Supervisor, Representatives from relevant authorities, Data Analyst, GIS Expert.",
+      width: "38rem",
+    },
+  ];
   return (
-    <section className="w-full h-screen py-4 bg-gradient-to-b from-white to-[#dff1ed]">
-      <div className="mx-auto text-center">
+    <section className="w-full h-screen bg-gradient-to-b from-white to-[#dff1ed]">
+      <div className="mx-auto text-center relative">
         {/* Section Title */}
-        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary">Next Steps</p>
+        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary absolute top-4 left-0 right-0">Next Steps</p>
 
         {/* Slider Component with Animation */}
         <motion.div
@@ -13,10 +32,46 @@ const NextSteps = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="rounded-3xl text-left w-[70%] m-auto text-xl"
+          className="rounded-3xl text-left w-full m-auto text-xl"
         >
-          {/* Row 1 (Grid with 3 items) */}
-          <div className="grid grid-cols-[27%_25%_36%] gap-2 mx-auto pt-12">
+          <img src="assets/next_steps.jpeg" className="w-screen h-screen object-cover" />
+          {markers.map((marker) => (
+            <div key={marker.id} style={{ top: marker.top, left: marker.left }} className="absolute z-10">
+              <div className="absolute inset-0 bg-white opacity-50 rounded-full w-[140%] h-[140%] -left-1/2 -right-1/2 m-auto" />
+              <button
+                onClick={() => setActiveMarker(marker.id === activeMarker ? null : marker.id)}
+                className={`${
+                  marker.id !== 8
+                    ? `w-10 h-10 text-center flex justify-center items-center p-2 rounded-full text-3xl ${
+                        activeMarker === marker.id ? "bg-[#007367] text-white" : "bg-white text-[#007367]"
+                      } font-medium shadow-xl shadow-[#ffffff50] relative z-10`
+                    : ""
+                }`}
+              >
+                {marker.id === 8 ? (
+                  marker.id === activeMarker ? (
+                    <img src="assets/next_steps_help_active.svg" className="w-full h-full relative z-10" />
+                  ) : (
+                    <img src="assets/next_steps_help.svg" className="w-full h-full relative z-10" />
+                  )
+                ) : (
+                  marker.id
+                )}
+              </button>
+
+              {activeMarker === marker.id && (
+                <div
+                  className={`mb-4 bottom-full px-6 py-3 rounded-xl ${
+                    marker.id === 8 ? "text-left right-0 transform" : "text-center left-1/2 transform -translate-x-1/2"
+                  } bg-white text-[#515B64] text-2xl font-medium shadow-lg absolute`}
+                   style={{ width: marker.width }}
+                >
+                  {marker.text}
+                </div>
+              )}
+            </div>
+          ))}
+          {/* <div className="grid grid-cols-[27%_25%_36%] gap-2 mx-auto pt-12">
             <div className="h-[86px] flex items-center rounded-[12.82px] px-6 py-3 gap-3 bg-white border border-[#F3FCF6] shadow-[0px_4.27px_6.41px_rgba(180,201,194,0.1)]">
               <span className="text-[#00977D] font-bold text-3xl">1</span>
               Select and prepare the control center location.
@@ -31,7 +86,6 @@ const NextSteps = () => {
             </div>
           </div>
 
-          {/* Row 2 (Grid with 4 items) */}
           <div className="grid grid-cols-[29%_20%_20%_17%] gap-2 mx-auto pt-4">
             <div className="h-[86px] flex items-center rounded-[12.82px] px-6 py-3 gap-3 bg-white border border-[#F3FCF6] shadow-[0px_4.27px_6.41px_rgba(180,201,194,0.1)]">
               <span className="text-[#00977D] font-bold text-3xl">4</span>
@@ -58,7 +112,7 @@ const NextSteps = () => {
           <div className="rounded-xl text-[#515B64] w-[91%] px-6 py-3 bg-white border border-[#F3FCF6] shadow-[0px_4.27px_6.41px_rgba(180,201,194,0.1)]">
             <b>To ensure the effective operation of the control room, the following positions are recommended: </b> Control Room Manager, Shift
             Coordinators, Control Room Supervisor, Representatives from relevant authorities, Data Analyst, GIS Expert.
-          </div>
+          </div> */}
         </motion.div>
       </div>
     </section>

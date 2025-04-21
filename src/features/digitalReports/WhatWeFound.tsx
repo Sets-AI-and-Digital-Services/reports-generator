@@ -1,12 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ScrollableCharts } from "./ScrollableCharts";
-import BusVolumeTable from "../BusVolumeTable/BusVolumeTable";
 
 const WhatWeFound: React.FC = ({ ref }: { ref?: any }) => {
   return (
     <section ref={ref} className="w-full h-screen px-4 py-4 bg-[#fff]">
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-7xl mx-auto text-center">
         {/* Section Title */}
         <p className="mb-12 text-3xl font-bold md:text-5xl text-primary">What We Found</p>
 
