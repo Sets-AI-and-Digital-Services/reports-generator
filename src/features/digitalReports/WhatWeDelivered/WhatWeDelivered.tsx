@@ -23,7 +23,7 @@ const WhatWeDelivered: React.FC = () => {
       <div className="max-w-[80%] mx-auto">
         <h2 className="mb-28 text-3xl font-bold text-center md:text-5xl text-primary">What We Delivered</h2>
 
-        <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
+        <div className="flex flex-col-reverse items-center gap-8 md:flex-row">
           {/* Tabs List */}
           <div className="flex flex-col gap-4 w-2/6">
             {deliveryItems.map((item) => (

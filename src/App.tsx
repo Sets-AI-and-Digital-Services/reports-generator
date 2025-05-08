@@ -124,7 +124,7 @@ function App() {
       <div ref={registerRef} className="h-screen"><WhatWeDelivered /></div>
       <div ref={registerRef} className="h-screen"><WhatWeFound /></div>
       <div ref={registerRef} className="h-screen"><PilgrimsRouteTracking /></div>
-      <div ref={registerRef} className="h-screen"><BusCountAndDwellingTimes /></div>
+      {/* <div ref={registerRef} className="h-screen"><BusCountAndDwellingTimes /></div> */}
       {/* <div ref={registerRef} className="h-screen"><WhatWeAimFor /></div> */}
       <div ref={registerRef} className="h-screen"><KeyTrendsAndInsights /></div>
       <div ref={registerRef} className="h-screen"><NextSteps /></div>

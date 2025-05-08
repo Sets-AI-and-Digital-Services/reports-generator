@@ -4,7 +4,7 @@ import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const KeyTrendsAndInsights: React.FC = () => {
   return (
-    <section className="w-full h-screen py-8 bg-gradient-to-b from-white to-[#dff1ed]">
+    <section className="w-full h-screen py-8 bg-gradient-to-b from-white to-[#dff1ed] relative z-10">
       <div className="mx-auto text-center">
         {/* Section Title */}
         <p className="text-3xl md:text-7xl text-primary font-medium mb-12">Recommendations</p>

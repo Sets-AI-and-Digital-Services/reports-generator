@@ -11,9 +11,9 @@ const SwipeContainer = ({ children, setCurrentSlide }: { children: React.ReactNo
 
   const scrollByCard = (direction: "left" | "right") => {
     if (ref.current) {
-      const scrollAmount = window.innerWidth;
+      const cardWidth = ref.current?.firstElementChild?.clientWidth || window.innerWidth;
       ref.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+        left: direction === "left" ? -cardWidth : cardWidth,
         behavior: "smooth",
       });
     }
