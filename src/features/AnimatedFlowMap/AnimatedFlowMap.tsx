@@ -30,7 +30,10 @@ interface FlowPath {
   times: string[];
 }
 
-const getInterpolatedPosition = (path: [number, number][], progress: number) => {
+const getInterpolatedPosition = (
+  path: [number, number][],
+  progress: number
+) => {
   if (!path || path.length < 2) return null;
   const totalSegments = path.length - 1;
   const clampedProgress = Math.min(progress, 0.999);
@@ -45,8 +48,15 @@ const getInterpolatedPosition = (path: [number, number][], progress: number) => 
   return [x, y];
 };
 
-const interpolateBetween = (a: [number, number], b: [number, number], steps: number): [number, number][] =>
-  Array.from({ length: steps }, (_, i) => [a[0] + ((b[0] - a[0]) * (i + 1)) / (steps + 1), a[1] + ((b[1] - a[1]) * (i + 1)) / (steps + 1)]);
+const interpolateBetween = (
+  a: [number, number],
+  b: [number, number],
+  steps: number
+): [number, number][] =>
+  Array.from({ length: steps }, (_, i) => [
+    a[0] + ((b[0] - a[0]) * (i + 1)) / (steps + 1),
+    a[1] + ((b[1] - a[1]) * (i + 1)) / (steps + 1),
+  ]);
 
 const AnimatedFlowMap: React.FC = () => {
   const initialViewState = {
@@ -72,9 +82,14 @@ const AnimatedFlowMap: React.FC = () => {
   const [busFlows, setBusFlows] = useState<FlowPath[]>([]);
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [operators, setOperators] = useState<string[]>([]);
-  const [simSpeed, setSimSpeed] = useState<number>(60);
+  const [simSpeed, setSimSpeed] = useState<number>(1);
   const [fileList, setFileList] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>("2025-03-06.csv");
+
+  const [currentSimulatedTime, setCurrentSimulatedTime] = useState<string>("");
+  const [timestampRange, setTimestampRange] = useState<[number, number] | null>(
+    null
+  );
 
   const colorPalette = [
     [255, 99, 132],
@@ -108,8 +123,21 @@ const AnimatedFlowMap: React.FC = () => {
     if (fileCacheRef.current[selectedFile]) {
       const cachedData = fileCacheRef.current[selectedFile];
       setBusFlows(cachedData);
-      const uniqueOperators = [...new Set(cachedData.map((flow) => flow.operator))].filter((op) => op && op !== "Unknown");
+      const uniqueOperators = [
+        ...new Set(cachedData.map((flow) => flow.operator)),
+      ].filter((op) => op && op !== "Unknown");
       setOperators(uniqueOperators);
+
+      const allTimestamps = cachedData.flatMap((r) => r.timestamps);
+      const minTimestamp = allTimestamps.reduce(
+        (min, t) => Math.min(min, t),
+        Infinity
+      );
+      const maxTimestamp = allTimestamps.reduce(
+        (max, t) => Math.max(max, t),
+        -Infinity
+      );
+      setTimestampRange([minTimestamp, maxTimestamp]);
       return;
     }
 
@@ -143,7 +171,13 @@ const AnimatedFlowMap: React.FC = () => {
             const result: FlowPath[] = Object.entries(groupedByBus)
               .map(([busId, records]) => {
                 const sorted = records
-                  .filter((r) => r.Latitude && r.Longitude && !isNaN(+r.Latitude) && !isNaN(+r.Longitude))
+                  .filter(
+                    (r) =>
+                      r.Latitude &&
+                      r.Longitude &&
+                      !isNaN(+r.Latitude) &&
+                      !isNaN(+r.Longitude)
+                  )
                   .sort((a, b) => +a.Timestamp - +b.Timestamp);
 
                 const operator = sorted[0].Operator;
@@ -152,14 +186,24 @@ const AnimatedFlowMap: React.FC = () => {
                 let timestamps: number[] = [];
                 let times: string[] = [];
                 for (let i = 0; i < sorted.length - 1; i++) {
-                  const a: [number, number] = [parseFloat(sorted[i].Longitude), parseFloat(sorted[i].Latitude)];
-                  const b: [number, number] = [parseFloat(sorted[i + 1].Longitude), parseFloat(sorted[i + 1].Latitude)];
+                  const a: [number, number] = [
+                    parseFloat(sorted[i].Longitude),
+                    parseFloat(sorted[i].Latitude),
+                  ];
+                  const b: [number, number] = [
+                    parseFloat(sorted[i + 1].Longitude),
+                    parseFloat(sorted[i + 1].Latitude),
+                  ];
                   path.push(a, ...interpolateBetween(a, b, 6));
                   timestamps.push(...Array(7).fill(+sorted[i].Timestamp));
                   times.push(...Array(7).fill(sorted[i].Time));
                 }
                 if (path.length < 2) return null;
-                const avgSpeed = sorted.reduce((acc, r) => acc + parseFloat(r.Speed || "0"), 0) / (sorted.length || 1);
+                const avgSpeed =
+                  sorted.reduce(
+                    (acc, r) => acc + parseFloat(r.Speed || "0"),
+                    0
+                  ) / (sorted.length || 1);
                 return {
                   busId,
                   path,
@@ -172,11 +216,24 @@ const AnimatedFlowMap: React.FC = () => {
               })
               .filter(Boolean) as FlowPath[];
 
-            const uniqueOperators = [...new Set(result.map((r) => r.operator))].filter((op) => op && op !== "Unknown");
+            const uniqueOperators = [
+              ...new Set(result.map((r) => r.operator)),
+            ].filter((op) => op && op !== "Unknown");
             setOperators(uniqueOperators);
             setBusFlows(result);
             // Cache the parsed result so it can be reused later.
             fileCacheRef.current[selectedFile] = result;
+
+            const allTimestamps = result.flatMap((r) => r.timestamps);
+            const minTimestamp = allTimestamps.reduce(
+              (min, t) => Math.min(min, t),
+              Infinity
+            );
+            const maxTimestamp = allTimestamps.reduce(
+              (max, t) => Math.max(max, t),
+              -Infinity
+            );
+            setTimestampRange([minTimestamp, maxTimestamp]);
           },
           error: (error) => {
             console.error("Error parsing CSV:", error);
@@ -186,7 +243,9 @@ const AnimatedFlowMap: React.FC = () => {
   }, [selectedFile]);
 
   const filteredFlows = useMemo(() => {
-    return selectedOperator ? busFlows.filter((f) => f.operator === selectedOperator) : busFlows;
+    return selectedOperator
+      ? busFlows.filter((f) => f.operator === selectedOperator)
+      : busFlows;
   }, [busFlows, selectedOperator]);
 
   const displayedBusCount = filteredFlows.length;
@@ -201,13 +260,24 @@ const AnimatedFlowMap: React.FC = () => {
     const increment = 1 / (simFrames * 60);
 
     const animate = () => {
-      // Update the ref without triggering a re-render
       filteredFlows.forEach((flow) => {
         let current = flowProgressRef.current[flow.busId];
         if (current === undefined) current = Math.random();
         flowProgressRef.current[flow.busId] = (current + increment) % 1;
       });
-      // Throttle re-rendering by updating the animation trigger.
+
+      // ✅ Set current simulated time based on global progress
+      if (timestampRange) {
+        const [minTime, maxTime] = timestampRange;
+        const progressSample = Object.values(flowProgressRef.current)[0] ?? 0;
+        const currentUnix = minTime + progressSample * (maxTime - minTime);
+        const isMilliseconds = currentUnix > 1e12;
+        const date = new Date(
+          isMilliseconds ? currentUnix : currentUnix * 1000
+        );
+        setCurrentSimulatedTime(date.toLocaleString());
+      }
+
       setAnimationTrigger((prev) => prev + 1);
       frameId = requestAnimationFrame(animate);
     };
@@ -222,7 +292,10 @@ const AnimatedFlowMap: React.FC = () => {
       const progress = flowProgressRef.current[flow.busId] ?? 0;
       return Array.from({ length: segments }, (_, i) => {
         const p1 = getInterpolatedPosition(flow.path, progress - i * 0.005);
-        const p2 = getInterpolatedPosition(flow.path, progress - (i + 1) * 0.005);
+        const p2 = getInterpolatedPosition(
+          flow.path,
+          progress - (i + 1) * 0.005
+        );
         if (!p1 || !p2) return null;
         return {
           path: [p2, p1],
@@ -258,8 +331,9 @@ const AnimatedFlowMap: React.FC = () => {
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
           <span>
-            The animation displays the movement of buses across the city, showcasing 68 Madinah Buses and 34,000 Syndicate Buses. The total distance
-            traveled reached 1.7 million kilometers.
+            The animation displays the movement of buses across the city,
+            showcasing 68 Madinah Buses and 34,000 Syndicate Buses. The total
+            distance traveled reached 1.7 million kilometers.
           </span>
         </div>
         <div className="flex items-start gap-2">
@@ -285,7 +359,8 @@ const AnimatedFlowMap: React.FC = () => {
               className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
             >
               <span className="truncate">
-                <span className="opacity-70">Select Date:</span> {selectedFile ? selectedFile.replace(".csv", "") : "None"}
+                <span className="opacity-70">Select Date:</span>{" "}
+                {selectedFile ? selectedFile.replace(".csv", "") : "None"}
               </span>
               <ChevronDown className="ml-2 w-4 h-4" />
             </button>
@@ -318,7 +393,9 @@ const AnimatedFlowMap: React.FC = () => {
             onClick={() => setIsOperatorOpen(!isOperatorOpen)}
             className="w-full text-white bg-gray-700 bg-transparent backdrop-blur-[12px] rounded-[11.76px] px-2 py-2 border border-[#939598] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] flex justify-between items-center"
           >
-            <span className="truncate">{selectedOperator ?? "Operator Name"}</span>
+            <span className="truncate">
+              {selectedOperator ?? "Operator Name"}
+            </span>
             <ChevronDown className="ml-2 w-4 h-4" />
           </button>
 
@@ -332,7 +409,9 @@ const AnimatedFlowMap: React.FC = () => {
                   setIsOperatorOpen(false);
                 }}
                 className={`
-              px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === null && "bg-[#00977D]"} bg-opacity-60`}
+              px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${
+                selectedOperator === null && "bg-[#00977D]"
+              } bg-opacity-60`}
               >
                 None
               </li>
@@ -346,7 +425,9 @@ const AnimatedFlowMap: React.FC = () => {
                     setIsOperatorOpen(false);
                   }}
                   className={`
-                px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${selectedOperator === op && "bg-[#00977D]"} bg-opacity-60`}
+                px-4 py-2 cursor-pointer hover:bg-white hover:bg-opacity-20 ${
+                  selectedOperator === op && "bg-[#00977D]"
+                } bg-opacity-60`}
                 >
                   {op}
                 </li>
@@ -354,6 +435,12 @@ const AnimatedFlowMap: React.FC = () => {
             </ul>
           )}
         </div>
+
+        {currentSimulatedTime && (
+          <div className="text-xs text-white mt-2 px-1 opacity-80">
+            Simulated Time: {currentSimulatedTime}
+          </div>
+        )}
 
         {/* <label style={{ display: "block", marginTop: 8 }}>Simulated Minutes per Real Minute:</label>
         <input
@@ -369,8 +456,16 @@ const AnimatedFlowMap: React.FC = () => {
         </div> */}
       </div>
 
-      <DeckGL initialViewState={initialViewState} controller={true} layers={[...(filteredFlows.length > 0 ? [flowHeadsLayer] : [])]}>
-        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" style={{ width: "100%", height: "100%" }} />
+      <DeckGL
+        initialViewState={initialViewState}
+        controller={true}
+        layers={[...(filteredFlows.length > 0 ? [flowHeadsLayer] : [])]}
+      >
+        <StaticMap
+          mapboxAccessToken={MAPBOX_TOKEN}
+          mapStyle="mapbox://styles/mapbox/dark-v10"
+          style={{ width: "100%", height: "100%" }}
+        />
         {hoverInfo?.object && (
           <div
             style={{
