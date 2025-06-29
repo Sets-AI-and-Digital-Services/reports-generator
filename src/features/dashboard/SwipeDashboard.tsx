@@ -6,7 +6,11 @@ import SwipeContainer from "./SwipeContainer";
 import ExcelReaderRadar from "./componnets/charts/radarChart/ExcelReaderRadar";
 import light_bulb from "../../../public/assets/light_bulb.svg";
 
-const SwipeDashboard = ({ setCurrentSlide }: { setCurrentSlide: (index: number) => void }) => {
+const SwipeDashboard = ({
+  setCurrentSlide,
+}: {
+  setCurrentSlide: (index: number) => void;
+}) => {
   return (
     <div className="relative w-full h-full">
       <div className="absolute w-full h-[95%] top-0 bottom-0 m-auto bg-[#B4C9C240] rounded-2xl"></div>
@@ -21,7 +25,8 @@ const SwipeDashboard = ({ setCurrentSlide }: { setCurrentSlide: (index: number) 
               <div className="flex items-start gap-2">
                 <img src={light_bulb} className="" />
                 <span>
-                  This visualization highlights the top destinations frequently visited by pilgrims and visitors, with a total of over 130,000
+                  This visualization highlights the top destinations frequently
+                  visited by pilgrims and visitors, with a total of over 130,000
                   recorded visits. The five most visited locations are:
                   <li>Central Area – 60,040 visits</li>
                   <li>Sayyid Al-Shuhada – 28,155 visits</li>
@@ -32,7 +37,8 @@ const SwipeDashboard = ({ setCurrentSlide }: { setCurrentSlide: (index: number) 
               </div>
             </div>
             <iframe
-              src="https://flowmap.blue/1XeBWSrv6Rkbk6gEjdUdXtPV1SBCeR5MoXlZhjsrrpgc"
+              // src="https://flowmap.blue/1XeBWSrv6Rkbk6gEjdUdXtPV1SBCeR5MoXlZhjsrrpgc"
+              src="https://www.flowmap.blue/1zUO0LjjJ_NTdMdqR9AVgJucCprD-0Zxo26_yQ2zV8DE"
               width="100%"
               height="100%"
               style={{ border: "0" }}

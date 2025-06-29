@@ -150,19 +150,18 @@ const AnimatedFlowMap: React.FC = () => {
           skipEmptyLines: true,
           // You can add worker and chunk options as needed for large files.
           complete: ({ data }) => {
-            const groupedByDay: Record<string, RawBusRecord[]> = {};
-            data.forEach((record) => {
-              const dateKey = record.Time?.split(" ")[0];
-              if (!dateKey || !record["Bus Id"]) return;
-              if (!groupedByDay[dateKey]) groupedByDay[dateKey] = [];
-              groupedByDay[dateKey].push(record);
-            });
-
-            const firstDate = Object.keys(groupedByDay)[0];
-            if (!firstDate) return;
+            const validRecords = data.filter(
+              (r) =>
+                r["Bus Id"] &&
+                r.Latitude &&
+                r.Longitude &&
+                !isNaN(+r.Latitude) &&
+                !isNaN(+r.Longitude) &&
+                !isNaN(+r.Timestamp)
+            );
 
             const groupedByBus: Record<string, RawBusRecord[]> = {};
-            groupedByDay[firstDate].forEach((record) => {
+            validRecords.forEach((record) => {
               const id = record["Bus Id"];
               if (!groupedByBus[id]) groupedByBus[id] = [];
               groupedByBus[id].push(record);
@@ -196,7 +195,12 @@ const AnimatedFlowMap: React.FC = () => {
                   ];
                   path.push(a, ...interpolateBetween(a, b, 6));
                   timestamps.push(...Array(7).fill(+sorted[i].Timestamp));
-                  times.push(...Array(7).fill(sorted[i].Time));
+                  const rawTimestamp = Number(sorted[i].Timestamp);
+                  const isMilliseconds = rawTimestamp > 1e12; // e.g., 1748381236123
+                  const formattedTime = new Date(
+                    isMilliseconds ? rawTimestamp : rawTimestamp * 1000
+                  ).toLocaleString();
+                  times.push(...Array(7).fill(formattedTime));
                 }
                 if (path.length < 2) return null;
                 const avgSpeed =
