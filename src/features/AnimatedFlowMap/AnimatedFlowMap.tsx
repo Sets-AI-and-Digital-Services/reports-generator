@@ -117,39 +117,131 @@ const AnimatedFlowMap: React.FC = () => {
       .then(setFileList);
   }, []);
 
+  useEffect(() => {
+    if (fileList.length === 0) return;
+
+    let isCancelled = false;
+
+    const preloadMiniFiles = async () => {
+      for (const file of fileList) {
+        const miniFileName = `mini_${file}`;
+
+        if (fileCacheRef.current[file]) continue; // skip if already loaded
+
+        try {
+          const res = await fetch(`/data/output/${miniFileName}`);
+          const text = await res.text();
+
+          Papa.parse<RawBusRecord>(text, {
+            header: true,
+            skipEmptyLines: true,
+            complete: ({ data }) => {
+              if (isCancelled) return;
+
+              const validRecords = data.filter(
+                (r) =>
+                  r["Bus Id"] &&
+                  r.Latitude &&
+                  r.Longitude &&
+                  !isNaN(+r.Latitude) &&
+                  !isNaN(+r.Longitude) &&
+                  !isNaN(+r.Timestamp)
+              );
+
+              const groupedByBus: Record<string, RawBusRecord[]> = {};
+              validRecords.forEach((record) => {
+                const id = record["Bus Id"];
+                if (!groupedByBus[id]) groupedByBus[id] = [];
+                groupedByBus[id].push(record);
+              });
+
+              const result: FlowPath[] = Object.entries(groupedByBus)
+                .map(([busId, records]) => {
+                  const sorted = records
+                    .filter((r) => r.Latitude && r.Longitude)
+                    .sort((a, b) => +a.Timestamp - +b.Timestamp);
+                  const operator = sorted[0]?.Operator;
+                  if (!operator || operator === "Unknown") return null;
+
+                  let path: [number, number][] = [];
+                  let timestamps: number[] = [];
+                  let times: string[] = [];
+                  for (let i = 0; i < sorted.length - 1; i++) {
+                    const a: [number, number] = [
+                      parseFloat(sorted[i].Longitude),
+                      parseFloat(sorted[i].Latitude),
+                    ];
+                    const b: [number, number] = [
+                      parseFloat(sorted[i + 1].Longitude),
+                      parseFloat(sorted[i + 1].Latitude),
+                    ];
+                    path.push(a, ...interpolateBetween(a, b, 6));
+                    timestamps.push(...Array(7).fill(+sorted[i].Timestamp));
+                    const rawTimestamp = Number(sorted[i].Timestamp);
+                    const isMilliseconds = rawTimestamp > 1e12;
+                    const formattedTime = new Date(
+                      isMilliseconds ? rawTimestamp : rawTimestamp * 1000
+                    ).toLocaleString();
+                    times.push(...Array(7).fill(formattedTime));
+                  }
+
+                  if (path.length < 2) return null;
+                  const avgSpeed =
+                    sorted.reduce(
+                      (acc, r) => acc + parseFloat(r.Speed || "0"),
+                      0
+                    ) / (sorted.length || 1);
+                  return {
+                    busId,
+                    path,
+                    speed: avgSpeed,
+                    color: getOperatorColor(operator),
+                    operator,
+                    timestamps,
+                    times,
+                  };
+                })
+                .filter(Boolean) as FlowPath[];
+
+              // Cache mini version
+              fileCacheRef.current[file] = result;
+            },
+          });
+        } catch (err) {
+          console.warn(`Mini file not found for ${file}`);
+        }
+      }
+    };
+
+    preloadMiniFiles();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [fileList]);
+
   // --- File Caching and Parsing ---
   useEffect(() => {
-    // If the file data is already cached, use it.
     if (fileCacheRef.current[selectedFile]) {
-      const cachedData = fileCacheRef.current[selectedFile];
-      setBusFlows(cachedData);
-      const uniqueOperators = [
-        ...new Set(cachedData.map((flow) => flow.operator)),
-      ].filter((op) => op && op !== "Unknown");
-      setOperators(uniqueOperators);
-
-      const allTimestamps = cachedData.flatMap((r) => r.timestamps);
-      const minTimestamp = allTimestamps.reduce(
-        (min, t) => Math.min(min, t),
-        Infinity
-      );
-      const maxTimestamp = allTimestamps.reduce(
-        (max, t) => Math.max(max, t),
-        -Infinity
-      );
-      setTimestampRange([minTimestamp, maxTimestamp]);
-      return;
+      setBusFlows(fileCacheRef.current[selectedFile]);
     }
 
-    // Otherwise, fetch and parse the CSV file.
-    fetch(`/data/output/${selectedFile}`)
-      .then((res) => res.text())
-      .then((csvText) => {
-        Papa.parse<RawBusRecord>(csvText, {
+    let isCancelled = false;
+
+    const loadAndSetData = async (fileName: string, isMini = false) => {
+      const prefix = isMini ? "mini_" : "";
+      const path = `/data/output/${prefix}${fileName}`;
+
+      try {
+        const res = await fetch(path);
+        const text = await res.text();
+
+        Papa.parse<RawBusRecord>(text, {
           header: true,
           skipEmptyLines: true,
-          // You can add worker and chunk options as needed for large files.
           complete: ({ data }) => {
+            if (isCancelled) return;
+
             const validRecords = data.filter(
               (r) =>
                 r["Bus Id"] &&
@@ -170,17 +262,11 @@ const AnimatedFlowMap: React.FC = () => {
             const result: FlowPath[] = Object.entries(groupedByBus)
               .map(([busId, records]) => {
                 const sorted = records
-                  .filter(
-                    (r) =>
-                      r.Latitude &&
-                      r.Longitude &&
-                      !isNaN(+r.Latitude) &&
-                      !isNaN(+r.Longitude)
-                  )
+                  .filter((r) => r.Latitude && r.Longitude)
                   .sort((a, b) => +a.Timestamp - +b.Timestamp);
-
-                const operator = sorted[0].Operator;
+                const operator = sorted[0]?.Operator;
                 if (!operator || operator === "Unknown") return null;
+
                 let path: [number, number][] = [];
                 let timestamps: number[] = [];
                 let times: string[] = [];
@@ -196,12 +282,13 @@ const AnimatedFlowMap: React.FC = () => {
                   path.push(a, ...interpolateBetween(a, b, 6));
                   timestamps.push(...Array(7).fill(+sorted[i].Timestamp));
                   const rawTimestamp = Number(sorted[i].Timestamp);
-                  const isMilliseconds = rawTimestamp > 1e12; // e.g., 1748381236123
+                  const isMilliseconds = rawTimestamp > 1e12;
                   const formattedTime = new Date(
                     isMilliseconds ? rawTimestamp : rawTimestamp * 1000
                   ).toLocaleString();
                   times.push(...Array(7).fill(formattedTime));
                 }
+
                 if (path.length < 2) return null;
                 const avgSpeed =
                   sorted.reduce(
@@ -212,38 +299,50 @@ const AnimatedFlowMap: React.FC = () => {
                   busId,
                   path,
                   speed: avgSpeed,
-                  color: getOperatorColor(sorted[0].Operator),
-                  operator: sorted[0].Operator,
+                  color: getOperatorColor(operator),
+                  operator,
                   timestamps,
                   times,
                 };
               })
               .filter(Boolean) as FlowPath[];
 
-            const uniqueOperators = [
-              ...new Set(result.map((r) => r.operator)),
-            ].filter((op) => op && op !== "Unknown");
-            setOperators(uniqueOperators);
+            if (!isMini) {
+              // Update cache and state
+              fileCacheRef.current[fileName] = result;
+            }
+
+            // Update state (even for mini file)
             setBusFlows(result);
-            // Cache the parsed result so it can be reused later.
-            fileCacheRef.current[selectedFile] = result;
+            setOperators(
+              [...new Set(result.map((r) => r.operator)).values()].filter(
+                (op) => op && op !== "Unknown"
+              )
+            );
 
             const allTimestamps = result.flatMap((r) => r.timestamps);
-            const minTimestamp = allTimestamps.reduce(
-              (min, t) => Math.min(min, t),
-              Infinity
-            );
-            const maxTimestamp = allTimestamps.reduce(
-              (max, t) => Math.max(max, t),
-              -Infinity
-            );
+            const minTimestamp = Math.min(...allTimestamps);
+            const maxTimestamp = Math.max(...allTimestamps);
             setTimestampRange([minTimestamp, maxTimestamp]);
           },
-          error: (error) => {
-            console.error("Error parsing CSV:", error);
+          error: (err) => {
+            console.error(`Error parsing ${isMini ? "mini" : "full"} CSV`, err);
           },
         });
-      });
+      } catch (err) {
+        console.error(`Failed to fetch ${isMini ? "mini" : "full"} file:`, err);
+      }
+    };
+
+    // Step 1: Load mini file first
+    loadAndSetData(selectedFile, true);
+
+    // Step 2: Load full file in background
+    loadAndSetData(selectedFile, false);
+
+    return () => {
+      isCancelled = true;
+    };
   }, [selectedFile]);
 
   const filteredFlows = useMemo(() => {
@@ -321,7 +420,7 @@ const AnimatedFlowMap: React.FC = () => {
       .filter(Boolean),
     getPosition: (d) => d.position,
     getFillColor: (d) => [...d.color, 255],
-    getRadius: 10,
+    getRadius: 20,
     radiusUnits: "meters",
     pickable: false,
   });
