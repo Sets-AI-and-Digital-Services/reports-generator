@@ -1,23 +1,23 @@
-import CountUp from "react-countup";
+// import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 
-const stats = [
-  { value: 12, suffix: "+", label: "Stakeholders Interviews" },
-  { value: 3, label: "Entities Integrated" },
-  { value: 60000, suffix: "+", label: "Public Transport Buses Live Location" },
-  { value: 8, suffix: "+", label: "Site Visits Conducted Across the City" },
-  { value: 540, label: "Hours Of Live Operations Daily During Ramadan" },
-  { value: 15, label: "Live Camera Locations" },
-];
+// const stats = [
+//   { value: 12, suffix: "+", label: "Stakeholders Interviews" },
+//   { value: 3, label: "Entities Integrated" },
+//   { value: 60000, suffix: "+", label: "Public Transport Buses Live Location" },
+//   { value: 8, suffix: "+", label: "Site Visits Conducted Across the City" },
+//   { value: 540, label: "Hours Of Live Operations Daily During Ramadan" },
+//   { value: 15, label: "Live Camera Locations" },
+// ];
 
 const WhatWeActedOn: React.FC = () => {
-  const { ref, inView } = useInView({
+  const { ref } = useInView({
     threshold: 0.8,
     triggerOnce: true,
   });
 
-  const firstRowWidths = ["w-[27%]", "w-[20%]", "w-[43%]"];
-  const secondRowWidths = ["w-[34%]", "w-[35%]", "w-[24%]"];
+  // const firstRowWidths = ["w-[27%]", "w-[20%]", "w-[43%]"];
+  // const secondRowWidths = ["w-[34%]", "w-[35%]", "w-[24%]"];
 
   return (
     <section
@@ -28,7 +28,9 @@ const WhatWeActedOn: React.FC = () => {
     >
       <div className="mx-auto" ref={ref}>
         {/* Title */}
-        <p className="mb-16 text-3xl font-bold md:text-5xl text-primary text-center">What We Acted On</p>
+        <p className="mb-16 text-3xl font-bold md:text-5xl text-primary text-center">
+          What We Acted On
+        </p>
 
         <div className="flex gap-8 justify-center">
           <div className="flex flex-col gap-4 font-medium text-2xl text-[#939598]">

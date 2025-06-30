@@ -26,7 +26,7 @@ const CSV_FILES = [
 ];
 
 // 📍 Define a center for each file
-const FILE_CENTERS = {
+const FILE_CENTERS: any = {
   "north_axis_start_station.csv": [24.5000096, 39.6113084],
   "north_axis_end_station.csv": [24.4745393, 39.6111428],
   "nw_axis_internal_station.csv": [24.4775847, 39.6023218],
@@ -41,7 +41,7 @@ const FILE_CENTERS = {
   "quba_parking.csv": [24.4370756, 39.6179817],
 };
 
-const FILE_THRESHOLDS = {
+const FILE_THRESHOLDS: any = {
   north_axis_start_station: { low: 24.36, high: 45.24 },
   north_axis_end_station: { low: 0.84, high: 1.56 },
   nw_axis_internal_station: { low: 200.45, high: 372.27 },
@@ -57,7 +57,10 @@ const FILE_THRESHOLDS = {
   default: { low: 12, high: 22 },
 };
 
-const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.0 });
+const ambientLight = new AmbientLight({
+  color: [255, 255, 255],
+  intensity: 1.0,
+});
 const pointLight = new PointLight({
   color: [255, 255, 255],
   intensity: 0.8,
@@ -73,16 +76,16 @@ const INITIAL_VIEW_STATE = {
   bearing: -20,
 };
 
-const colorRange = [
-  [1, 152, 189],
-  [73, 227, 206],
-  [216, 254, 181],
-  [254, 237, 177],
-  [254, 173, 84],
-  [209, 55, 78],
-];
+// const colorRange = [
+//   [1, 152, 189],
+//   [73, 227, 206],
+//   [216, 254, 181],
+//   [254, 237, 177],
+//   [254, 173, 84],
+//   [209, 55, 78],
+// ];
 
-function generatePointAround(lat, lng) {
+function generatePointAround(lat: any, lng: any) {
   const latOffset = (Math.random() - 0.5) * 0.02;
   const lngOffset = (Math.random() - 0.5) * 0.02;
   return [lng + lngOffset, lat + latOffset];
@@ -93,7 +96,7 @@ export default function BarMap() {
 
   useEffect(() => {
     const loadFiles = async () => {
-      const fetchFile = async (fileName) => {
+      const fetchFile = async (fileName: any) => {
         const center = FILE_CENTERS[fileName] || [24.4709, 39.6122];
         const [lat, lng] = center;
         const filePath = `/data/dwelling_time/${fileName}`;
@@ -103,7 +106,7 @@ export default function BarMap() {
           const parsed = await parse(text, CSVLoader);
           // For each row, generate a point around the file's defined center.
           const pointsFromFile = parsed.data
-            .map((row) => {
+            .map((row: any) => {
               const total = parseFloat(row.Average_Time_Spent);
               if (!isNaN(total) && total > 0) {
                 const [x, y] = generatePointAround(lat, lng);
@@ -127,7 +130,7 @@ export default function BarMap() {
       // Load all CSV files concurrently.
       const allFiles = await Promise.all(CSV_FILES.map(fetchFile));
       // Flatten all points from each file.
-      const allPoints = allFiles.flat();
+      const allPoints: any = allFiles.flat();
       setPoints(allPoints);
     };
 
@@ -146,7 +149,8 @@ export default function BarMap() {
     getElevation: (d) => d.value,
     getFillColor: (d) => {
       const fileKey = d.source || "default";
-      const { low, high } = FILE_THRESHOLDS[fileKey] || FILE_THRESHOLDS["default"];
+      const { low, high } =
+        FILE_THRESHOLDS[fileKey] || FILE_THRESHOLDS["default"];
       const v = d.value;
 
       if (v < low) return [34, 197, 94]; // green
@@ -168,9 +172,11 @@ export default function BarMap() {
         <div className="flex items-start gap-2">
           <img src={light_bulb} className="" />
           <span>
-            The dwell time analysis reveals operational pressure points across the city, with top destinations accounting for over 75,000 hours of bus
-            stoppage, and the Central Area alone contributing 20,000 hours. This highlights the need for better crowd flow management and real-time
-            scheduling at key locations.
+            The dwell time analysis reveals operational pressure points across
+            the city, with top destinations accounting for over 75,000 hours of
+            bus stoppage, and the Central Area alone contributing 20,000 hours.
+            This highlights the need for better crowd flow management and
+            real-time scheduling at key locations.
           </span>
         </div>
         <div className="flex items-start gap-2">
@@ -193,7 +199,8 @@ export default function BarMap() {
 
           const name = object.operator || "Unknown";
           const source = object.source || "Unknown Source";
-          const value = typeof object.value === "number" ? object.value.toFixed(2) : "N/A";
+          const value =
+            typeof object.value === "number" ? object.value.toFixed(2) : "N/A";
 
           return {
             html: `
@@ -206,7 +213,10 @@ export default function BarMap() {
           };
         }}
       >
-        <StaticMap mapboxAccessToken={MAPBOX_TOKEN} mapStyle="mapbox://styles/mapbox/dark-v10" />
+        <StaticMap
+          mapboxAccessToken={MAPBOX_TOKEN}
+          mapStyle="mapbox://styles/mapbox/dark-v10"
+        />
       </DeckGL>
     </>
   );

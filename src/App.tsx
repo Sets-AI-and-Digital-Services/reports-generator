@@ -10,12 +10,12 @@ import WhatWeActedOn from "./features/digitalReports/WhatWeActedOn";
 import WhatWeDelivered from "./features/digitalReports/WhatWeDelivered/WhatWeDelivered";
 import WhatWeFound from "./features/digitalReports/WhatWeFound";
 import ThankYou from "./features/digitalReports/ThankYou";
-import WhatWeAimFor from "./features/digitalReports/WhatWeAimFor";
+// import WhatWeAimFor from "./features/digitalReports/WhatWeAimFor";
 import KeyTrendsAndInsights from "./features/digitalReports/KeyTrendsAndInsights";
 import NextSteps from "./features/digitalReports/NextSteps";
-import BenefitsToTheCity from "./features/digitalReports/BenefitsToTheCity";
+// import BenefitsToTheCity from "./features/digitalReports/BenefitsToTheCity";
 import PilgrimsRouteTracking from "./features/digitalReports/PilgrimsRouteTracking";
-import BusCountAndDwellingTimes from "./features/digitalReports/BusCountAndDwellingTimes";
+// import BusCountAndDwellingTimes from "./features/digitalReports/BusCountAndDwellingTimes";
 
 function App() {
   const sectionRefs = useRef<HTMLElement[]>([]);
@@ -37,7 +37,6 @@ function App() {
     });
   };
 
-
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -54,21 +53,22 @@ function App() {
       scrollToSection(nextIndex);
     };
 
+    // const isScrollable = (el: HTMLElement): boolean => {
+    //   return el.scrollHeight > el.clientHeight;
+    // };
 
-    const isScrollable = (el: HTMLElement): boolean => {
-      return el.scrollHeight > el.clientHeight;
-    };
-    
-    const isScrollingInsideScrollableElement = (target: EventTarget | null): boolean => {
-      let node = target as HTMLElement | null;
-    
-      while (node && node !== document.body) {
-        if (isScrollable(node)) return true;
-        node = node.parentElement;
-      }
-    
-      return false;
-    };
+    // const isScrollingInsideScrollableElement = (
+    //   target: EventTarget | null
+    // ): boolean => {
+    //   let node = target as HTMLElement | null;
+
+    //   while (node && node !== document.body) {
+    //     if (isScrollable(node)) return true;
+    //     node = node.parentElement;
+    //   }
+
+    //   return false;
+    // };
 
     const isNoScrollZone = (target: EventTarget | null): boolean => {
       let node = target as HTMLElement | null;
@@ -78,18 +78,17 @@ function App() {
       }
       return false;
     };
-    
-    
+
     const handleWheel = (e: WheelEvent) => {
       if (isNoScrollZone(e.target)) return; // ✅ Let the child handle it
-    
+
       e.preventDefault();
       handleScroll(e.deltaY > 0 ? 1 : -1);
     };
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isNoScrollZone(e.target)) return;
-    
+
       if (["ArrowDown", "PageDown", " "].includes(e.key)) {
         e.preventDefault();
         handleScroll(1);
@@ -98,15 +97,14 @@ function App() {
         handleScroll(-1);
       }
     };
-    
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
-    
+
     return () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
-    }
+    };
   }, []);
 
   const registerRef = (el: HTMLElement | null) => {
@@ -117,18 +115,36 @@ function App() {
 
   return (
     <>
-      <div ref={registerRef} className="h-screen z-10"><HeroSection /></div>
-      <div ref={registerRef} className="h-screen z-20"><WhatWePromised /></div>
+      <div ref={registerRef} className="h-screen z-10">
+        <HeroSection />
+      </div>
+      <div ref={registerRef} className="h-screen z-20">
+        <WhatWePromised />
+      </div>
       {/* <div ref={registerRef} className="h-screen z-30"><BenefitsToTheCity /></div> */}
-      <div ref={registerRef} className="h-screen z-40"><WhatWeActedOn /></div>
-      <div ref={registerRef} className="h-screen"><WhatWeDelivered /></div>
-      <div ref={registerRef} className="h-screen"><WhatWeFound /></div>
-      <div ref={registerRef} className="h-screen"><PilgrimsRouteTracking /></div>
+      <div ref={registerRef} className="h-screen z-40">
+        <WhatWeActedOn />
+      </div>
+      <div ref={registerRef} className="h-screen">
+        <WhatWeDelivered />
+      </div>
+      <div ref={registerRef} className="h-screen">
+        <WhatWeFound />
+      </div>
+      <div ref={registerRef} className="h-screen">
+        <PilgrimsRouteTracking />
+      </div>
       {/* <div ref={registerRef} className="h-screen"><BusCountAndDwellingTimes /></div> */}
       {/* <div ref={registerRef} className="h-screen"><WhatWeAimFor /></div> */}
-      <div ref={registerRef} className="h-screen"><KeyTrendsAndInsights /></div>
-      <div ref={registerRef} className="h-screen"><NextSteps /></div>
-      <div ref={registerRef} className="h-screen"><ThankYou /></div>
+      <div ref={registerRef} className="h-screen">
+        <KeyTrendsAndInsights />
+      </div>
+      <div ref={registerRef} className="h-screen">
+        <NextSteps />
+      </div>
+      <div ref={registerRef} className="h-screen">
+        <ThankYou />
+      </div>
     </>
   );
 }

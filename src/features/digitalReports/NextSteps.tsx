@@ -1,30 +1,32 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+// import { useState } from "react";
 
 const NextSteps = () => {
-  const [activeMarker, setActiveMarker] = useState<number | null>(null);
+  // const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
-  const markers = [
-    { id: 1, top: "62%", left: "14%", text: "Select and prepare the control center location.", width: "20rem" },
-    { id: 2, top: "30%", left: "27%", text: "Develop the control center system.", width: "20rem" },
-    { id: 3, top: "50%", left: "40%", text: "Enhance integration and coordination with stakeholders.", width: "25rem" },
-    { id: 4, top: "78%", left: "32%", text: "Development of the control center’s operational system.", width: "25rem" },
-    { id: 5, top: "65%", left: "56%", text: "Hajj operational assessment.", width: "15rem" },
-    { id: 6, top: "57%", left: "81%", text: "Control center governance.", width: "15rem" },
-    { id: 7, top: "38%", left: "60%", text: "Operation of the center.", width: "14rem" },
-    {
-      id: 8,
-      top: "90%",
-      left: "95%",
-      text: "To ensure the effective operation of the control room, the following positions are recommended: Control Room Manager, Shift Coordinators, Control Room Supervisor, Representatives from relevant authorities, Data Analyst, GIS Expert.",
-      width: "38rem",
-    },
-  ];
+  // const markers = [
+  //   { id: 1, top: "62%", left: "14%", text: "Select and prepare the control center location.", width: "20rem" },
+  //   { id: 2, top: "30%", left: "27%", text: "Develop the control center system.", width: "20rem" },
+  //   { id: 3, top: "50%", left: "40%", text: "Enhance integration and coordination with stakeholders.", width: "25rem" },
+  //   { id: 4, top: "78%", left: "32%", text: "Development of the control center’s operational system.", width: "25rem" },
+  //   { id: 5, top: "65%", left: "56%", text: "Hajj operational assessment.", width: "15rem" },
+  //   { id: 6, top: "57%", left: "81%", text: "Control center governance.", width: "15rem" },
+  //   { id: 7, top: "38%", left: "60%", text: "Operation of the center.", width: "14rem" },
+  //   {
+  //     id: 8,
+  //     top: "90%",
+  //     left: "95%",
+  //     text: "To ensure the effective operation of the control room, the following positions are recommended: Control Room Manager, Shift Coordinators, Control Room Supervisor, Representatives from relevant authorities, Data Analyst, GIS Expert.",
+  //     width: "38rem",
+  //   },
+  // ];
   return (
     <section className="w-full h-screen bg-gradient-to-b from-white to-[#dff1ed]">
       <div className="mx-auto text-center relative">
         {/* Section Title */}
-        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary absolute top-14 left-0 right-0">Next Steps</p>
+        <p className="mb-6 text-3xl font-bold md:text-5xl text-primary absolute top-14 left-0 right-0">
+          Next Steps
+        </p>
 
         {/* Slider Component with Animation */}
         <motion.div
@@ -34,7 +36,10 @@ const NextSteps = () => {
           viewport={{ once: true }}
           className="rounded-3xl text-left w-full m-auto text-xl"
         >
-          <img src="assets/next_steps.jpeg" className="w-screen h-screen object-cover" />
+          <img
+            src="assets/next_steps.jpeg"
+            className="w-screen h-screen object-cover"
+          />
           <div className="absolute top-52 flex flex-col items-center left-0 right-0 m-auto w-fit font-medium">
             <p className="px-40 py-6 mb-6 rounded-xl bg-[#007367] shadow-[0px_4.27px_6.41px_#B4C9C21A] text-[#F3FCF6] text-5xl">
               Control Center Governance

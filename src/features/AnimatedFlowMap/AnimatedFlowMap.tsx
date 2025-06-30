@@ -75,14 +75,14 @@ const AnimatedFlowMap: React.FC = () => {
   // Use a ref to hold fast-changing animation values without triggering re-renders.
   const flowProgressRef = useRef<{ [key: string]: number }>({});
   // A secondary state updated less frequently to trigger recalculation of derived layer data.
-  const [animationTrigger, setAnimationTrigger] = useState<number>(0);
+  // const [animationTrigger, setAnimationTrigger] = useState<number>(0);
 
   // --- Component State ---
-  const [hoverInfo, setHoverInfo] = useState<any>(null);
+  const [hoverInfo, _] = useState<any>(null);
   const [busFlows, setBusFlows] = useState<FlowPath[]>([]);
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [operators, setOperators] = useState<string[]>([]);
-  const [simSpeed, setSimSpeed] = useState<number>(1);
+  const [simSpeed, __] = useState<number>(1);
   const [fileList, setFileList] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>("2025-03-06.csv");
 
@@ -325,7 +325,7 @@ const AnimatedFlowMap: React.FC = () => {
             const maxTimestamp = Math.max(...allTimestamps);
             setTimestampRange([minTimestamp, maxTimestamp]);
           },
-          error: (err) => {
+          error: (err: any) => {
             console.error(`Error parsing ${isMini ? "mini" : "full"} CSV`, err);
           },
         });
@@ -351,7 +351,7 @@ const AnimatedFlowMap: React.FC = () => {
       : busFlows;
   }, [busFlows, selectedOperator]);
 
-  const displayedBusCount = filteredFlows.length;
+  // const displayedBusCount = filteredFlows.length;
 
   // --- Optimized Animation Loop ---
   useEffect(() => {
@@ -381,7 +381,7 @@ const AnimatedFlowMap: React.FC = () => {
         setCurrentSimulatedTime(date.toLocaleString());
       }
 
-      setAnimationTrigger((prev) => prev + 1);
+      // setAnimationTrigger((prev) => prev + 1);
       frameId = requestAnimationFrame(animate);
     };
     frameId = requestAnimationFrame(animate);
@@ -389,25 +389,25 @@ const AnimatedFlowMap: React.FC = () => {
   }, [filteredFlows, simSpeed]);
 
   // --- Derived Data for Layers (using ref and the trigger state) ---
-  const trailData = useMemo(() => {
-    const segments = 3;
-    return filteredFlows.flatMap((flow) => {
-      const progress = flowProgressRef.current[flow.busId] ?? 0;
-      return Array.from({ length: segments }, (_, i) => {
-        const p1 = getInterpolatedPosition(flow.path, progress - i * 0.005);
-        const p2 = getInterpolatedPosition(
-          flow.path,
-          progress - (i + 1) * 0.005
-        );
-        if (!p1 || !p2) return null;
-        return {
-          path: [p2, p1],
-          color: flow.color,
-          opacity: 255 * (1 - i / segments),
-        };
-      }).filter(Boolean);
-    });
-  }, [filteredFlows, animationTrigger]);
+  // const trailData = useMemo(() => {
+  //   const segments = 3;
+  //   return filteredFlows.flatMap((flow) => {
+  //     const progress = flowProgressRef.current[flow.busId] ?? 0;
+  //     return Array.from({ length: segments }, (_, i) => {
+  //       const p1 = getInterpolatedPosition(flow.path, progress - i * 0.005);
+  //       const p2 = getInterpolatedPosition(
+  //         flow.path,
+  //         progress - (i + 1) * 0.005
+  //       );
+  //       if (!p1 || !p2) return null;
+  //       return {
+  //         path: [p2, p1],
+  //         color: flow.color,
+  //         opacity: 255 * (1 - i / segments),
+  //       };
+  //     }).filter(Boolean);
+  //   });
+  // }, [filteredFlows, animationTrigger]);
 
   const flowHeadsLayer = new ScatterplotLayer({
     id: "flow-heads",
@@ -419,6 +419,7 @@ const AnimatedFlowMap: React.FC = () => {
       })
       .filter(Boolean),
     getPosition: (d) => d.position,
+    // @ts-ignore
     getFillColor: (d) => [...d.color, 255],
     getRadius: 20,
     radiusUnits: "meters",

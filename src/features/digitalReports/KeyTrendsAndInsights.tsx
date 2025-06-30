@@ -1,13 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
-import light_bulb from "../../../public/assets/light_bulb.svg";
+// import light_bulb from "../../../public/assets/light_bulb.svg";
 
 const KeyTrendsAndInsights: React.FC = () => {
   return (
     <section className="w-full h-screen py-8 bg-gradient-to-b from-white to-[#dff1ed] relative z-10">
       <div className="mx-auto text-center">
         {/* Section Title */}
-        <p className="text-3xl md:text-7xl text-primary font-medium mb-12">Recommendations</p>
+        <p className="text-3xl md:text-7xl text-primary font-medium mb-12">
+          Recommendations
+        </p>
 
         {/* Slider Component with Animation */}
         <motion.div
@@ -20,7 +22,9 @@ const KeyTrendsAndInsights: React.FC = () => {
           <div className="flex flex-col gap-3 items-center w-[75rem] m-auto font-normal text-2xl">
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
               <img src="/assets/recommendations_1.svg" />
-              <span>Establish clear policies for bus entry into the central area</span>
+              <span>
+                Establish clear policies for bus entry into the central area
+              </span>
             </div>
 
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
@@ -30,7 +34,10 @@ const KeyTrendsAndInsights: React.FC = () => {
 
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
               <img src="/assets/recommendations_3.svg" />
-              <span>Jawlah dedicated fleet for city sightseeing tours, preventing GSC buses </span>
+              <span>
+                Jawlah dedicated fleet for city sightseeing tours, preventing
+                GSC buses{" "}
+              </span>
             </div>
 
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
@@ -40,12 +47,17 @@ const KeyTrendsAndInsights: React.FC = () => {
 
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
               <img src="/assets/recommendations_5.svg" />
-              <span>Seasonal terminals at city entry points, shuttle buses operating on main corridors</span>
+              <span>
+                Seasonal terminals at city entry points, shuttle buses operating
+                on main corridors
+              </span>
             </div>
 
             <div className="w-full rounded-[12px] border-[1.07px] border-[#F3FCF6] bg-white pl-4 py-3 flex items-center gap-3 shadow-[0px_4.27px_6.41px_#B4C9C21A]">
               <img src="/assets/recommendations_6.svg" />
-              <span>Allocate seasonal parking areas outside the city for GSC buses</span>
+              <span>
+                Allocate seasonal parking areas outside the city for GSC buses
+              </span>
             </div>
           </div>
           {/* <div className="w-3/5 m-auto pt-12 flex flex-col gap-4 text-left text-2xl font-normal">
